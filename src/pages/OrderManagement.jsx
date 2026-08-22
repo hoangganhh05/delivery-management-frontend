@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { PackagePlus, Ticket, Plus, Trash2, CheckCircle2, AlertCircle, Send, Calculator, ArrowRight } from 'lucide-react';
-import { createOrder, calculateVoucher } from '../api/deliveryApi';
+import { PackagePlus, Ticket, Plus, Trash2, CheckCircle2, AlertCircle, Send, Calculator, CreditCard, ExternalLink, RefreshCw } from 'lucide-react';
+import { createOrder, calculateVoucher, createPayment } from '../api/deliveryApi';
 
 const OrderManagement = () => {
   // Order Form State
@@ -20,6 +20,13 @@ const OrderManagement = () => {
   const [orderSubmitting, setOrderSubmitting] = useState(false);
   const [orderResult, setOrderResult] = useState(null);
   const [orderError, setOrderError] = useState(null);
+
+  // Recent Orders List (session state)
+  const [recentOrders, setRecentOrders] = useState([]);
+
+  // Payment Loading State per order
+  const [payingOrderId, setPayingOrderId] = useState(null);
+  const [paymentError, setPaymentError] = useState(null);
 
   // Voucher Form State
   const [voucherForm, setVoucherForm] = useState({
@@ -71,6 +78,7 @@ const OrderManagement = () => {
     setOrderSubmitting(true);
     setOrderResult(null);
     setOrderError(null);
+    setPaymentError(null);
 
     try {
       const payload = {
@@ -101,7 +109,20 @@ const OrderManagement = () => {
       };
 
       const res = await createOrder(payload);
-      setOrderResult(res);
+      const createdOrderId = res.orderId || res.id || res.data?.id || res.data?.orderId || `ORD-${Date.now().toString().slice(-6)}`;
+      
+      const newOrderEntry = {
+        orderId: createdOrderId,
+        receiverName: orderForm.receiverName,
+        receiverPhone: orderForm.receiverPhone,
+        shippingFee: parseFloat(orderForm.shippingFee) || 0,
+        codAmount: parseFloat(orderForm.codAmount) || 0,
+        createdAt: new Date().toLocaleTimeString('vi-VN'),
+      };
+
+      setOrderResult({ ...res, resolvedOrderId: createdOrderId });
+      setRecentOrders((prev) => [newOrderEntry, ...prev]);
+
       // Reset form on success
       setOrderForm({
         senderName: '',
@@ -120,6 +141,34 @@ const OrderManagement = () => {
       setOrderError(err.message || 'Tạo đơn hàng thất bại. Vui lòng kiểm tra lại dữ liệu.');
     } finally {
       setOrderSubmitting(false);
+    }
+  };
+
+  // VNPay Payment Trigger
+  const handleVNPayPayment = async (orderId) => {
+    if (!orderId) return;
+    setPayingOrderId(orderId);
+    setPaymentError(null);
+
+    try {
+      const res = await createPayment(orderId);
+      // Support string URL, or { paymentUrl: '...' }, { url: '...' }, { data: '...' }
+      const paymentUrl =
+        typeof res === 'string'
+          ? res
+          : res.paymentUrl || res.url || res.data?.paymentUrl || res.data?.url || res.data;
+
+      if (paymentUrl && typeof paymentUrl === 'string' && paymentUrl.startsWith('http')) {
+        // Redirect user to VNPay Sandbox Gateway
+        window.location.href = paymentUrl;
+      } else {
+        throw new Error('Không nhận được đường dẫn thanh toán hợp lệ từ VNPay.');
+      }
+    } catch (err) {
+      console.error('Payment error:', err);
+      setPaymentError(`Lỗi khởi tạo cổng VNPay cho đơn ${orderId}: ${err.message}`);
+    } finally {
+      setPayingOrderId(null);
     }
   };
 
@@ -159,261 +208,326 @@ const OrderManagement = () => {
           Tạo & Quản Lý Đơn Hàng
         </h1>
         <p className="text-sm text-gray-500 mt-1">
-          Khởi tạo vận đơn mới, nhập thông tin bưu kiện và tính toán ưu đãi mã giảm giá
+          Khởi tạo vận đơn mới, tích hợp thanh toán VNPay trực tuyến và tính toán ưu đãi mã giảm giá
         </p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-        {/* SECTION 1: CREATE ORDER FORM (2 Cols on lg) */}
-        <div className="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-200 p-6 sm:p-8">
-          <div className="flex items-center justify-between pb-4 border-b border-gray-100 mb-6">
-            <h2 className="text-lg sm:text-xl font-bold text-gray-800 flex items-center gap-2">
-              <span className="w-2.5 h-6 bg-red-600 rounded-full inline-block"></span>
-              Tạo Vận Đơn Mới
-            </h2>
-            <span className="text-xs font-semibold px-2.5 py-1 bg-red-50 text-red-600 rounded-full">
-              Bắt buộc nhập đủ
-            </span>
+      {paymentError && (
+        <div className="p-4 bg-rose-50 border border-rose-200 rounded-xl flex items-start gap-3 text-rose-800">
+          <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5 text-rose-600" />
+          <div className="flex-1">
+            <p className="font-semibold">Lỗi thanh toán VNPay</p>
+            <p className="text-xs mt-0.5">{paymentError}</p>
           </div>
+        </div>
+      )}
 
-          {orderResult && (
-            <div className="mb-6 p-4 bg-emerald-50 border border-emerald-200 rounded-lg flex items-start gap-3 text-emerald-800">
-              <CheckCircle2 className="w-5 h-5 flex-shrink-0 mt-0.5 text-emerald-600" />
-              <div>
-                <p className="font-semibold text-emerald-900">Tạo đơn hàng thành công!</p>
-                <p className="text-sm mt-1">
-                  Mã đơn hàng:{' '}
-                  <span className="font-mono font-bold bg-emerald-100 px-2 py-0.5 rounded">
-                    {orderResult.orderId || orderResult.id || JSON.stringify(orderResult.data?.id || orderResult.data?.orderId || 'Đã lưu')}
-                  </span>
-                </p>
-              </div>
-            </div>
-          )}
-
-          {orderError && (
-            <div className="mb-6 p-4 bg-rose-50 border border-rose-200 rounded-lg flex items-start gap-3 text-rose-800">
-              <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5 text-rose-600" />
-              <div>
-                <p className="font-semibold">Lỗi tạo đơn hàng</p>
-                <p className="text-sm mt-1">{orderError}</p>
-              </div>
-            </div>
-          )}
-
-          <form onSubmit={handleOrderSubmit} className="space-y-6">
-            {/* Người gửi & Người nhận */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Người gửi */}
-              <div className="p-4 bg-gray-50/70 rounded-xl border border-gray-200/80 space-y-4">
-                <h3 className="text-sm font-bold text-gray-700 uppercase tracking-wide flex items-center gap-1.5 text-red-600">
-                  <span>1.</span> Thông Tin Người Gửi
-                </h3>
-                <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1">Họ tên người gửi *</label>
-                  <input
-                    type="text"
-                    name="senderName"
-                    required
-                    value={orderForm.senderName}
-                    onChange={handleOrderChange}
-                    placeholder="Nguyễn Văn A"
-                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none bg-white"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1">Số điện thoại *</label>
-                  <input
-                    type="tel"
-                    name="senderPhone"
-                    required
-                    value={orderForm.senderPhone}
-                    onChange={handleOrderChange}
-                    placeholder="0987654321"
-                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none bg-white"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1">Địa chỉ lấy hàng *</label>
-                  <textarea
-                    rows="2"
-                    name="senderAddress"
-                    required
-                    value={orderForm.senderAddress}
-                    onChange={handleOrderChange}
-                    placeholder="Số 1 Giang Văn Minh, Ba Đình, Hà Nội"
-                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none bg-white resize-none"
-                  />
-                </div>
-              </div>
-
-              {/* Người nhận */}
-              <div className="p-4 bg-gray-50/70 rounded-xl border border-gray-200/80 space-y-4">
-                <h3 className="text-sm font-bold text-gray-700 uppercase tracking-wide flex items-center gap-1.5 text-red-600">
-                  <span>2.</span> Thông Tin Người Nhận
-                </h3>
-                <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1">Họ tên người nhận *</label>
-                  <input
-                    type="text"
-                    name="receiverName"
-                    required
-                    value={orderForm.receiverName}
-                    onChange={handleOrderChange}
-                    placeholder="Trần Thị B"
-                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none bg-white"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1">Số điện thoại *</label>
-                  <input
-                    type="tel"
-                    name="receiverPhone"
-                    required
-                    value={orderForm.receiverPhone}
-                    onChange={handleOrderChange}
-                    placeholder="0912345678"
-                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none bg-white"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1">Địa chỉ giao hàng *</label>
-                  <textarea
-                    rows="2"
-                    name="receiverAddress"
-                    required
-                    value={orderForm.receiverAddress}
-                    onChange={handleOrderChange}
-                    placeholder="Số 285 Cách Mạng Tháng 8, Quận 10, TP.HCM"
-                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none bg-white resize-none"
-                  />
-                </div>
-              </div>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+        {/* SECTION 1: CREATE ORDER FORM */}
+        <div className="lg:col-span-2 space-y-6">
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 sm:p-8">
+            <div className="flex items-center justify-between pb-4 border-b border-gray-100 mb-6">
+              <h2 className="text-lg sm:text-xl font-bold text-gray-800 flex items-center gap-2">
+                <span className="w-2.5 h-6 bg-red-600 rounded-full inline-block"></span>
+                Tạo Vận Đơn Mới
+              </h2>
+              <span className="text-xs font-semibold px-2.5 py-1 bg-red-50 text-red-600 rounded-full">
+                Bắt buộc nhập đủ
+              </span>
             </div>
 
-            {/* Thông số kiện hàng & Phí */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 p-4 bg-gray-50/70 rounded-xl border border-gray-200/80">
-              <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">Khối lượng (kg) *</label>
-                <input
-                  type="number"
-                  step="0.1"
-                  min="0"
-                  name="weight"
-                  required
-                  value={orderForm.weight}
-                  onChange={handleOrderChange}
-                  placeholder="1.5"
-                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none bg-white"
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">Cước vận chuyển (VNĐ) *</label>
-                <input
-                  type="number"
-                  min="0"
-                  name="shippingFee"
-                  required
-                  value={orderForm.shippingFee}
-                  onChange={handleOrderChange}
-                  placeholder="30000"
-                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none bg-white"
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">Tiền thu hộ COD (VNĐ)</label>
-                <input
-                  type="number"
-                  min="0"
-                  name="codAmount"
-                  value={orderForm.codAmount}
-                  onChange={handleOrderChange}
-                  placeholder="0"
-                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none bg-white"
-                />
-              </div>
-            </div>
+            {/* Created Success Alert with VNPay button */}
+            {orderResult && (
+              <div className="mb-6 p-5 bg-emerald-50 border border-emerald-200 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-emerald-800">
+                <div className="flex items-start gap-3">
+                  <CheckCircle2 className="w-6 h-6 flex-shrink-0 mt-0.5 text-emerald-600" />
+                  <div>
+                    <p className="font-bold text-emerald-900">Tạo đơn hàng thành công!</p>
+                    <p className="text-xs mt-1">
+                      Mã đơn hàng:{' '}
+                      <span className="font-mono font-bold bg-emerald-100 text-emerald-900 px-2 py-0.5 rounded">
+                        {orderResult.resolvedOrderId}
+                      </span>
+                    </p>
+                  </div>
+                </div>
 
-            {/* Danh sách hàng hóa (Items) */}
-            <div className="p-4 bg-gray-50/70 rounded-xl border border-gray-200/80 space-y-3">
-              <div className="flex items-center justify-between">
-                <h3 className="text-sm font-bold text-gray-700 uppercase tracking-wide flex items-center gap-1.5 text-red-600">
-                  <span>3.</span> Danh Sách Mặt Hàng Trong Kiện
-                </h3>
                 <button
                   type="button"
-                  onClick={addItem}
-                  className="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 bg-red-600 text-white rounded-md hover:bg-red-700 transition"
+                  onClick={() => handleVNPayPayment(orderResult.resolvedOrderId)}
+                  disabled={payingOrderId === orderResult.resolvedOrderId}
+                  className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-bold text-xs shadow transition cursor-pointer self-start sm:self-auto"
                 >
-                  <Plus className="w-3.5 h-3.5" /> Thêm hàng
+                  {payingOrderId === orderResult.resolvedOrderId ? (
+                    <RefreshCw className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <CreditCard className="w-4 h-4" />
+                  )}
+                  <span>Thanh Toán VNPay</span>
                 </button>
               </div>
+            )}
 
-              <div className="space-y-3">
-                {orderForm.items.map((item, index) => (
-                  <div key={index} className="flex flex-col sm:flex-row items-center gap-3 bg-white p-3 rounded-lg border border-gray-200">
-                    <div className="w-full sm:flex-1">
-                      <input
-                        type="text"
-                        placeholder="Tên hàng hóa (ví dụ: Quần áo, Điện thoại)"
-                        required
-                        value={item.itemName}
-                        onChange={(e) => handleItemChange(index, 'itemName', e.target.value)}
-                        className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-red-500 outline-none"
-                      />
+            {orderError && (
+              <div className="mb-6 p-4 bg-rose-50 border border-rose-200 rounded-xl flex items-start gap-3 text-rose-800">
+                <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5 text-rose-600" />
+                <div>
+                  <p className="font-semibold">Lỗi tạo đơn hàng</p>
+                  <p className="text-sm mt-1">{orderError}</p>
+                </div>
+              </div>
+            )}
+
+            <form onSubmit={handleOrderSubmit} className="space-y-6">
+              {/* Người gửi & Người nhận */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Người gửi */}
+                <div className="p-4 bg-gray-50/70 rounded-xl border border-gray-200/80 space-y-4">
+                  <h3 className="text-sm font-bold text-gray-700 uppercase tracking-wide flex items-center gap-1.5 text-red-600">
+                    <span>1.</span> Thông Tin Người Gửi
+                  </h3>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">Họ tên người gửi *</label>
+                    <input
+                      type="text"
+                      name="senderName"
+                      required
+                      value={orderForm.senderName}
+                      onChange={handleOrderChange}
+                      placeholder="Nguyễn Văn A"
+                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none bg-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">Số điện thoại *</label>
+                    <input
+                      type="tel"
+                      name="senderPhone"
+                      required
+                      value={orderForm.senderPhone}
+                      onChange={handleOrderChange}
+                      placeholder="0987654321"
+                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none bg-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">Địa chỉ lấy hàng *</label>
+                    <textarea
+                      rows="2"
+                      name="senderAddress"
+                      required
+                      value={orderForm.senderAddress}
+                      onChange={handleOrderChange}
+                      placeholder="Số 1 Giang Văn Minh, Ba Đình, Hà Nội"
+                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none bg-white resize-none"
+                    />
+                  </div>
+                </div>
+
+                {/* Người nhận */}
+                <div className="p-4 bg-gray-50/70 rounded-xl border border-gray-200/80 space-y-4">
+                  <h3 className="text-sm font-bold text-gray-700 uppercase tracking-wide flex items-center gap-1.5 text-red-600">
+                    <span>2.</span> Thông Tin Người Nhận
+                  </h3>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">Họ tên người nhận *</label>
+                    <input
+                      type="text"
+                      name="receiverName"
+                      required
+                      value={orderForm.receiverName}
+                      onChange={handleOrderChange}
+                      placeholder="Trần Thị B"
+                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none bg-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">Số điện thoại *</label>
+                    <input
+                      type="tel"
+                      name="receiverPhone"
+                      required
+                      value={orderForm.receiverPhone}
+                      onChange={handleOrderChange}
+                      placeholder="0912345678"
+                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none bg-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">Địa chỉ giao hàng *</label>
+                    <textarea
+                      rows="2"
+                      name="receiverAddress"
+                      required
+                      value={orderForm.receiverAddress}
+                      onChange={handleOrderChange}
+                      placeholder="Số 285 Cách Mạng Tháng 8, Quận 10, TP.HCM"
+                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none bg-white resize-none"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Thông số kiện hàng & Phí */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 p-4 bg-gray-50/70 rounded-xl border border-gray-200/80">
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">Khối lượng (kg) *</label>
+                  <input
+                    type="number"
+                    step="0.1"
+                    min="0"
+                    name="weight"
+                    required
+                    value={orderForm.weight}
+                    onChange={handleOrderChange}
+                    placeholder="1.5"
+                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none bg-white"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">Cước vận chuyển (VNĐ) *</label>
+                  <input
+                    type="number"
+                    min="0"
+                    name="shippingFee"
+                    required
+                    value={orderForm.shippingFee}
+                    onChange={handleOrderChange}
+                    placeholder="30000"
+                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none bg-white"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">Tiền thu hộ COD (VNĐ)</label>
+                  <input
+                    type="number"
+                    min="0"
+                    name="codAmount"
+                    value={orderForm.codAmount}
+                    onChange={handleOrderChange}
+                    placeholder="0"
+                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none bg-white"
+                  />
+                </div>
+              </div>
+
+              {/* Danh sách hàng hóa (Items) */}
+              <div className="p-4 bg-gray-50/70 rounded-xl border border-gray-200/80 space-y-3">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-sm font-bold text-gray-700 uppercase tracking-wide flex items-center gap-1.5 text-red-600">
+                    <span>3.</span> Danh Sách Mặt Hàng Trong Kiện
+                  </h3>
+                  <button
+                    type="button"
+                    onClick={addItem}
+                    className="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 bg-red-600 text-white rounded-md hover:bg-red-700 transition"
+                  >
+                    <Plus className="w-3.5 h-3.5" /> Thêm hàng
+                  </button>
+                </div>
+
+                <div className="space-y-3">
+                  {orderForm.items.map((item, index) => (
+                    <div key={index} className="flex flex-col sm:flex-row items-center gap-3 bg-white p-3 rounded-lg border border-gray-200">
+                      <div className="w-full sm:flex-1">
+                        <input
+                          type="text"
+                          placeholder="Tên hàng hóa (ví dụ: Quần áo, Phụ kiện)"
+                          required
+                          value={item.itemName}
+                          onChange={(e) => handleItemChange(index, 'itemName', e.target.value)}
+                          className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-red-500 outline-none"
+                        />
+                      </div>
+                      <div className="w-full sm:w-28">
+                        <input
+                          type="number"
+                          min="1"
+                          placeholder="SL"
+                          required
+                          value={item.quantity}
+                          onChange={(e) => handleItemChange(index, 'quantity', e.target.value)}
+                          className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-red-500 outline-none"
+                        />
+                      </div>
+                      <div className="w-full sm:w-36">
+                        <input
+                          type="number"
+                          min="0"
+                          placeholder="Giá trị (VNĐ)"
+                          value={item.price}
+                          onChange={(e) => handleItemChange(index, 'price', e.target.value)}
+                          className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-red-500 outline-none"
+                        />
+                      </div>
+                      {orderForm.items.length > 1 && (
+                        <button
+                          type="button"
+                          onClick={() => removeItem(index)}
+                          className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-md transition"
+                          title="Xóa hàng này"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      )}
                     </div>
-                    <div className="w-full sm:w-28">
-                      <input
-                        type="number"
-                        min="1"
-                        placeholder="SL"
-                        required
-                        value={item.quantity}
-                        onChange={(e) => handleItemChange(index, 'quantity', e.target.value)}
-                        className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-red-500 outline-none"
-                      />
+                  ))}
+                </div>
+              </div>
+
+              {/* Submit Button */}
+              <div className="flex justify-end">
+                <button
+                  type="submit"
+                  disabled={orderSubmitting}
+                  className="inline-flex items-center gap-2 px-6 py-3 bg-red-600 text-white rounded-xl hover:bg-red-700 active:bg-red-800 transition font-bold shadow-md disabled:opacity-60 cursor-pointer"
+                >
+                  <Send className={`w-4 h-4 ${orderSubmitting ? 'animate-bounce' : ''}`} />
+                  {orderSubmitting ? 'Đang Tạo Vận Đơn...' : 'Xác Nhận Tạo Đơn'}
+                </button>
+              </div>
+            </form>
+          </div>
+
+          {/* Recently Created Orders Section with VNPay button */}
+          {recentOrders.length > 0 && (
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
+              <h3 className="text-base font-bold text-gray-900 mb-4 flex items-center justify-between">
+                <span>Đơn hàng vừa tạo trong phiên</span>
+                <span className="text-xs font-normal text-gray-500">{recentOrders.length} đơn</span>
+              </h3>
+              <div className="divide-y divide-gray-100">
+                {recentOrders.map((ord) => (
+                  <div key={ord.orderId} className="py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div>
+                      <span className="font-mono font-bold text-sm text-gray-900 mr-2">{ord.orderId}</span>
+                      <span className="text-xs text-gray-600">
+                        {ord.receiverName} ({ord.receiverPhone}) - Cước: <strong className="text-red-600">{formatVND(ord.shippingFee)}</strong>
+                      </span>
                     </div>
-                    <div className="w-full sm:w-36">
-                      <input
-                        type="number"
-                        min="0"
-                        placeholder="Giá trị (VNĐ)"
-                        value={item.price}
-                        onChange={(e) => handleItemChange(index, 'price', e.target.value)}
-                        className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-red-500 outline-none"
-                      />
-                    </div>
-                    {orderForm.items.length > 1 && (
-                      <button
-                        type="button"
-                        onClick={() => removeItem(index)}
-                        className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-md transition"
-                        title="Xóa hàng này"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    )}
+                    <button
+                      type="button"
+                      onClick={() => handleVNPayPayment(ord.orderId)}
+                      disabled={payingOrderId === ord.orderId}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold transition shadow-sm cursor-pointer self-start sm:self-auto"
+                    >
+                      {payingOrderId === ord.orderId ? (
+                        <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                      ) : (
+                        <CreditCard className="w-3.5 h-3.5" />
+                      )}
+                      <span>Thanh toán VNPay</span>
+                      <ExternalLink className="w-3 h-3 ml-0.5" />
+                    </button>
                   </div>
                 ))}
               </div>
             </div>
-
-            {/* Submit Button */}
-            <div className="flex justify-end">
-              <button
-                type="submit"
-                disabled={orderSubmitting}
-                className="inline-flex items-center gap-2 px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 active:bg-red-800 transition font-bold shadow-md disabled:opacity-60 cursor-pointer"
-              >
-                <Send className={`w-4 h-4 ${orderSubmitting ? 'animate-bounce' : ''}`} />
-                {orderSubmitting ? 'Đang Tạo Vận Đơn...' : 'Xác Nhận Tạo Đơn'}
-              </button>
-            </div>
-          </form>
+          )}
         </div>
 
-        {/* SECTION 2: VOUCHER CALCULATOR (1 Col on lg) */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 sm:p-8">
+        {/* SECTION 2: VOUCHER CALCULATOR */}
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 sm:p-8">
           <div className="flex items-center justify-between pb-4 border-b border-gray-100 mb-6">
             <h2 className="text-lg font-bold text-gray-800 flex items-center gap-2">
               <Ticket className="w-5 h-5 text-red-600" />
@@ -450,7 +564,7 @@ const OrderManagement = () => {
             <button
               type="submit"
               disabled={voucherSubmitting}
-              className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition font-medium text-sm disabled:opacity-60 cursor-pointer shadow"
+              className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-gray-900 text-white rounded-xl hover:bg-gray-800 transition font-medium text-sm disabled:opacity-60 cursor-pointer shadow"
             >
               <Calculator className="w-4 h-4" />
               {voucherSubmitting ? 'Đang Tính Toán...' : 'Kiểm Tra & Tính Giảm Giá'}
@@ -459,7 +573,7 @@ const OrderManagement = () => {
 
           {/* Voucher Error */}
           {voucherError && (
-            <div className="mt-4 p-3 bg-rose-50 border border-rose-200 rounded-lg flex items-start gap-2 text-xs text-rose-700">
+            <div className="mt-4 p-3 bg-rose-50 border border-rose-200 rounded-xl flex items-start gap-2 text-xs text-rose-700">
               <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
               <span>{voucherError}</span>
             </div>
