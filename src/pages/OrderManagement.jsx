@@ -236,27 +236,39 @@ const OrderManagement = () => {
                   <div>
                     <p className="font-bold text-emerald-900">Tạo đơn hàng thành công!</p>
                     <p className="text-xs mt-1">
-                      Mã đơn hàng:{' '}
-                      <span className="font-mono font-bold bg-emerald-100 text-emerald-900 px-2 py-0.5 rounded">
-                        {orderResult.resolvedOrderId}
+                      Mã vận đơn (Tra cứu):{' '}
+                      <span className="font-mono font-bold bg-emerald-100 text-emerald-900 px-2.5 py-1 rounded border border-emerald-300 select-all">
+                        {orderResult.trackingNumber}
                       </span>
                     </p>
                   </div>
                 </div>
 
-                <button
-                  type="button"
-                  onClick={() => handleVNPayPayment(orderResult.resolvedOrderId)}
-                  disabled={payingOrderId === orderResult.resolvedOrderId}
-                  className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-bold text-xs shadow transition cursor-pointer self-start sm:self-auto"
-                >
-                  {payingOrderId === orderResult.resolvedOrderId ? (
-                    <RefreshCw className="w-4 h-4 animate-spin" />
-                  ) : (
-                    <CreditCard className="w-4 h-4" />
-                  )}
-                  <span>Thanh Toán VNPay</span>
-                </button>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      navigator.clipboard.writeText(orderResult.trackingNumber);
+                      alert('Đã sao chép mã vận đơn!');
+                    }}
+                    className="px-3 py-2 bg-emerald-100 hover:bg-emerald-200 text-emerald-800 rounded-lg text-xs font-bold transition cursor-pointer"
+                  >
+                    Sao chép mã 📋
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleVNPayPayment(orderResult.resolvedOrderId)}
+                    disabled={payingOrderId === orderResult.resolvedOrderId}
+                    className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-bold text-xs shadow transition cursor-pointer self-start sm:self-auto"
+                  >
+                    {payingOrderId === orderResult.resolvedOrderId ? (
+                      <RefreshCw className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <CreditCard className="w-4 h-4" />
+                    )}
+                    <span>Thanh Toán VNPay</span>
+                  </button>
+                </div>
               </div>
             )}
 
@@ -530,8 +542,17 @@ const OrderManagement = () => {
               <div className="divide-y divide-gray-100">
                 {recentOrders.map((ord) => (
                   <div key={ord.orderId} className="py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                    <div>
-                      <span className="font-mono font-bold text-sm text-gray-900 mr-2">{ord.orderId}</span>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span 
+                        onClick={() => {
+                          navigator.clipboard.writeText(ord.trackingNumber);
+                          alert('Đã sao chép mã vận đơn!');
+                        }}
+                        className="font-mono font-bold text-xs bg-red-50 text-red-700 border border-red-200 px-2 py-1 rounded cursor-pointer hover:bg-red-100 transition"
+                        title="Click để sao chép mã vận đơn"
+                      >
+                        📋 {ord.trackingNumber}
+                      </span>
                       <span className="text-xs text-gray-600">
                         {ord.receiverName} ({ord.receiverPhone}) - Cước: <strong className="text-red-600">{formatVND(ord.shippingFee)}</strong>
                       </span>
