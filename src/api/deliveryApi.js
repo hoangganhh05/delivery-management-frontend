@@ -43,6 +43,28 @@ export const createPayment = (orderId) => {
   return axiosClient.get(`/payment/vnpay/${orderId}`);
 };
 
+// Shipper Management APIs
+export const getShippers = () => {
+  return axiosClient.get('/shippers');
+};
+
+// Notification APIs
+export const getNotifications = () => {
+  return axiosClient.get('/notifications');
+};
+
+export const getUnreadNotificationCount = () => {
+  return axiosClient.get('/notifications/unread-count');
+};
+
+export const markNotificationAsRead = (id) => {
+  return axiosClient.put(`/notifications/${id}/read`);
+};
+
+export const markAllNotificationsAsRead = () => {
+  return axiosClient.put('/notifications/read-all');
+};
+
 export default {
   login,
   register,
@@ -53,4 +75,9 @@ export default {
   calculateVoucher,
   trackOrder,
   createPayment,
+  getShippers,
+  getNotifications,
+  getUnreadNotificationCount,
+  markNotificationAsRead,
+  markAllNotificationsAsRead,
 };

@@ -1,8 +1,12 @@
-import React, { useState } from 'react';
-import { UserCheck, RefreshCw, CheckCircle2, AlertCircle, Send, ArrowLeftRight, Image as ImageIcon, FileText } from 'lucide-react';
-import { assignShipper, updateShipmentStatus } from '../api/deliveryApi';
+import React, { useState, useEffect } from 'react';
+import { UserCheck, RefreshCw, CheckCircle2, AlertCircle, Send, ArrowLeftRight, Image as ImageIcon, FileText, Users, Phone, Mail, Shield } from 'lucide-react';
+import { assignShipper, updateShipmentStatus, getShippers } from '../api/deliveryApi';
 
 const ShipmentManagement = () => {
+  // Shippers List State
+  const [shippers, setShippers] = useState([]);
+  const [shippersLoading, setShippersLoading] = useState(false);
+
   // Form 1: Assign Shipper State
   const [assignForm, setAssignForm] = useState({
     orderId: '',
@@ -16,7 +20,7 @@ const ShipmentManagement = () => {
   // Form 2: Update Shipment Status State
   const [statusForm, setStatusForm] = useState({
     orderId: '',
-    status: 'DELIVERING',
+    status: 'IN_TRANSIT',
     proofImageUrl: '',
     note: '',
   });
@@ -24,16 +28,36 @@ const ShipmentManagement = () => {
   const [statusSuccess, setStatusSuccess] = useState(null);
   const [statusError, setStatusError] = useState(null);
 
+  // Match Exact Backend OrderStatus Enum
   const statusOptions = [
-    { value: 'PENDING', label: 'Chờ tiếp nhận (PENDING)' },
-    { value: 'ASSIGNED', label: 'Đã phân công Shipper (ASSIGNED)' },
-    { value: 'PICKED_UP', label: 'Đã lấy hàng (PICKED_UP)' },
-    { value: 'DELIVERING', label: 'Đang giao hàng (DELIVERING)' },
-    { value: 'DELIVERED', label: 'Giao hàng thành công (DELIVERED)' },
-    { value: 'FAILED', label: 'Giao hàng thất bại (FAILED)' },
-    { value: 'RETURNED', label: 'Đã hoàn trả hàng (RETURNED)' },
-    { value: 'CANCELLED', label: 'Đã hủy đơn (CANCELLED)' },
+    { value: 'ASSIGNED', label: '1. Đã phân công Shipper (ASSIGNED)' },
+    { value: 'PICKED_UP', label: '2. Shipper đã lấy hàng (PICKED_UP)' },
+    { value: 'IN_TRANSIT', label: '3. Đang vận chuyển / Đang giao (IN_TRANSIT)' },
+    { value: 'DELIVERED', label: '4. Giao hàng thành công (DELIVERED)' },
+    { value: 'PAID', label: '5. Đã thanh toán (PAID)' },
+    { value: 'CANCELLED', label: '6. Hủy đơn hàng (CANCELLED)' },
   ];
+
+  // Fetch shippers on mount
+  const fetchShippersList = async () => {
+    setShippersLoading(true);
+    try {
+      const res = await getShippers();
+      const list = res.data || res || [];
+      setShippers(Array.isArray(list) ? list : []);
+      if (Array.isArray(list) && list.length > 0 && !assignForm.shipperId) {
+        setAssignForm(prev => ({ ...prev, shipperId: list[0].id.toString() }));
+      }
+    } catch (e) {
+      console.warn('Could not fetch shippers:', e);
+    } finally {
+      setShippersLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchShippersList();
+  }, []);
 
   // Handle Assign Shipper Submit
   const handleAssignSubmit = async (e) => {
@@ -43,18 +67,25 @@ const ShipmentManagement = () => {
     setAssignError(null);
 
     try {
+      const ordId = parseInt(assignForm.orderId, 10);
+      const shipId = parseInt(assignForm.shipperId, 10);
+
+      if (isNaN(ordId) || isNaN(shipId)) {
+        throw new Error('ID đơn hàng và ID shipper phải là chữ số hợp lệ.');
+      }
+
       const payload = {
-        orderId: assignForm.orderId.trim(),
-        shipperId: assignForm.shipperId.trim(),
+        orderId: ordId,
+        shipperId: shipId,
         note: assignForm.note.trim(),
       };
 
       const res = await assignShipper(payload);
       setAssignSuccess(res || { message: 'Phân công Shipper thành công!' });
-      setAssignForm({ orderId: '', shipperId: '', note: '' });
+      setAssignForm(prev => ({ ...prev, orderId: '', note: '' }));
     } catch (err) {
       console.error('Assign shipper error:', err);
-      setAssignError(err.message || 'Phân công Shipper thất bại. Vui lòng kiểm tra lại ID.');
+      setAssignError(err.message || 'Phân công Shipper thất bại. Vui lòng kiểm tra lại ID đơn hàng (phải ở trạng thái CREATED).');
     } finally {
       setAssignLoading(false);
     }
@@ -68,27 +99,35 @@ const ShipmentManagement = () => {
     setStatusError(null);
 
     try {
-      const orderId = statusForm.orderId.trim();
+      const ordId = parseInt(statusForm.orderId, 10);
+      if (isNaN(ordId)) {
+        throw new Error('ID đơn hàng phải là chữ số hợp lệ.');
+      }
+
       const payload = {
         status: statusForm.status,
         proofImageUrl: statusForm.proofImageUrl.trim(),
         note: statusForm.note.trim(),
       };
 
-      const res = await updateShipmentStatus(orderId, payload);
+      const res = await updateShipmentStatus(ordId, payload);
       setStatusSuccess(res || { message: 'Cập nhật trạng thái vận đơn thành công!' });
-      setStatusForm({
+      setStatusForm(prev => ({
+        ...prev,
         orderId: '',
-        status: 'DELIVERING',
         proofImageUrl: '',
         note: '',
-      });
+      }));
     } catch (err) {
       console.error('Update status error:', err);
       setStatusError(err.message || 'Cập nhật trạng thái đơn hàng thất bại.');
     } finally {
       setStatusLoading(false);
     }
+  };
+
+  const quickAssignShipper = (shipperId) => {
+    setAssignForm(prev => ({ ...prev, shipperId: shipperId.toString() }));
   };
 
   return (
@@ -148,27 +187,44 @@ const ShipmentManagement = () => {
                   Mã Đơn Hàng (Order ID) *
                 </label>
                 <input
-                  type="text"
+                  type="number"
                   required
                   value={assignForm.orderId}
                   onChange={(e) => setAssignForm({ ...assignForm, orderId: e.target.value })}
-                  placeholder="VD: ORD-1001 hoặc 1"
+                  placeholder="Nhập ID đơn hàng (Ví dụ: 1, 2, 3...)"
                   className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">
-                  Mã Nhân Viên Shipper (Shipper ID) *
+                <label className="block text-xs font-medium text-gray-700 mb-1 flex items-center justify-between">
+                  <span>Chọn Nhân Viên Shipper *</span>
+                  <span className="text-[11px] text-gray-500 font-normal">
+                    {shippers.length} nhân viên khả dụng
+                  </span>
                 </label>
-                <input
-                  type="text"
-                  required
-                  value={assignForm.shipperId}
-                  onChange={(e) => setAssignForm({ ...assignForm, shipperId: e.target.value })}
-                  placeholder="VD: SHIP-88 hoặc 10"
-                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none"
-                />
+                {shippers.length > 0 ? (
+                  <select
+                    value={assignForm.shipperId}
+                    onChange={(e) => setAssignForm({ ...assignForm, shipperId: e.target.value })}
+                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none bg-white font-medium"
+                  >
+                    {shippers.map((s) => (
+                      <option key={s.id} value={s.id}>
+                        {s.fullName} ({s.username}) - SĐT: {s.phoneNumber} [ID: {s.id}]
+                      </option>
+                    ))}
+                  </select>
+                ) : (
+                  <input
+                    type="number"
+                    required
+                    value={assignForm.shipperId}
+                    onChange={(e) => setAssignForm({ ...assignForm, shipperId: e.target.value })}
+                    placeholder="VD: 2 hoặc 3"
+                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 outline-none"
+                  />
+                )}
               </div>
 
               <div>
@@ -239,11 +295,11 @@ const ShipmentManagement = () => {
                   Mã Đơn Hàng (Order ID) *
                 </label>
                 <input
-                  type="text"
+                  type="number"
                   required
                   value={statusForm.orderId}
                   onChange={(e) => setStatusForm({ ...statusForm, orderId: e.target.value })}
-                  placeholder="VD: ORD-1001 hoặc 1"
+                  placeholder="Nhập ID đơn hàng (Ví dụ: 1, 2, 3...)"
                   className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none"
                 />
               </div>
@@ -304,6 +360,74 @@ const ShipmentManagement = () => {
             </form>
           </div>
         </div>
+      </div>
+
+      {/* SECTION 3: SHIPPER TEAM LIST */}
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 sm:p-8">
+        <div className="flex items-center justify-between pb-4 border-b border-gray-100 mb-6">
+          <div className="flex items-center gap-2">
+            <Users className="w-5 h-5 text-red-600" />
+            <h2 className="text-lg font-bold text-gray-800">Đội Ngũ Nhân Viên Giao Hàng (Shipper)</h2>
+          </div>
+          <button
+            onClick={fetchShippersList}
+            disabled={shippersLoading}
+            className="inline-flex items-center gap-1.5 text-xs font-medium text-gray-600 hover:text-red-600 bg-gray-50 hover:bg-red-50 px-3 py-1.5 rounded-lg border border-gray-200 transition cursor-pointer"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 ${shippersLoading ? 'animate-spin' : ''}`} />
+            <span>Làm mới</span>
+          </button>
+        </div>
+
+        {shippers.length === 0 ? (
+          <div className="p-8 text-center text-sm text-gray-400">
+            {shippersLoading ? 'Đang tải danh sách shipper...' : 'Chưa có thông tin nhân viên shipper nào trong hệ thống.'}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {shippers.map((s) => (
+              <div
+                key={s.id}
+                className="p-4 rounded-xl border border-gray-200/80 bg-gray-50/50 hover:bg-white hover:border-red-300 hover:shadow-md transition-all space-y-3"
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-9 h-9 bg-red-600 text-white font-bold text-sm rounded-full flex items-center justify-center shadow-sm">
+                      {s.fullName ? s.fullName.charAt(0) : 'S'}
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-sm text-gray-900 leading-tight">{s.fullName}</h3>
+                      <span className="text-[11px] text-gray-500">@{s.username} • ID: #{s.id}</span>
+                    </div>
+                  </div>
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">
+                    {s.status || 'Sẵn sàng'}
+                  </span>
+                </div>
+
+                <div className="text-xs text-gray-600 space-y-1 pt-1 border-t border-gray-200/60">
+                  <div className="flex items-center gap-1.5">
+                    <Phone className="w-3.5 h-3.5 text-gray-400" />
+                    <span>{s.phoneNumber || 'Chưa cập nhật SĐT'}</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <Mail className="w-3.5 h-3.5 text-gray-400" />
+                    <span className="truncate">{s.email || 'Chưa cập nhật Email'}</span>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => quickAssignShipper(s.id)}
+                  className="w-full mt-2 inline-flex items-center justify-center gap-1.5 text-xs font-semibold py-1.5 px-3 bg-white hover:bg-red-50 text-red-600 border border-red-200 rounded-lg transition cursor-pointer"
+                >
+                  <UserCheck className="w-3.5 h-3.5" />
+                  <span>Chọn Shipper này</span>
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
