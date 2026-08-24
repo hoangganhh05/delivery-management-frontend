@@ -5,16 +5,17 @@ import { createOrder, calculateVoucher, createPayment } from '../api/deliveryApi
 const OrderManagement = () => {
   // Order Form State
   const [orderForm, setOrderForm] = useState({
-    senderName: '',
-    senderPhone: '',
-    senderAddress: '',
-    receiverName: '',
-    receiverPhone: '',
-    receiverAddress: '',
-    weight: '',
-    shippingFee: '',
+    senderName: 'Nguyễn Văn A',
+    senderPhone: '0987654321',
+    senderAddress: 'Số 1 Giang Văn Minh, Ba Đình, Hà Nội',
+    receiverName: 'Trần Thị B',
+    receiverPhone: '0912345678',
+    receiverAddress: 'Số 285 Cách Mạng Tháng 8, Quận 10, TP.HCM',
+    weight: '1.5',
+    shippingFee: '30000',
     codAmount: '0',
-    items: [{ itemName: '', quantity: 1, price: '' }],
+    voucherCode: '',
+    items: [{ itemName: 'Quần áo thời trang', quantity: 1, weightGram: 500, declaredValue: 100000 }],
   });
 
   const [orderSubmitting, setOrderSubmitting] = useState(false);
@@ -30,8 +31,8 @@ const OrderManagement = () => {
 
   // Voucher Form State
   const [voucherForm, setVoucherForm] = useState({
-    voucherCode: '',
-    orderAmount: '',
+    voucherCode: 'VIETTEL50',
+    orderAmount: '100000',
   });
   const [voucherSubmitting, setVoucherSubmitting] = useState(false);
   const [voucherResult, setVoucherResult] = useState(null);
@@ -59,7 +60,7 @@ const OrderManagement = () => {
   const addItem = () => {
     setOrderForm((prev) => ({
       ...prev,
-      items: [...prev.items, { itemName: '', quantity: 1, price: '' }],
+      items: [...prev.items, { itemName: '', quantity: 1, weightGram: 500, declaredValue: 50000 }],
     }));
   };
 
@@ -81,38 +82,33 @@ const OrderManagement = () => {
     setPaymentError(null);
 
     try {
+      const weightGramVal = Math.max(10, Math.round((parseFloat(orderForm.weight) || 1) * 1000));
       const payload = {
-        sender: {
-          name: orderForm.senderName,
-          phone: orderForm.senderPhone,
-          address: orderForm.senderAddress,
-        },
-        receiver: {
-          name: orderForm.receiverName,
-          phone: orderForm.receiverPhone,
-          address: orderForm.receiverAddress,
-        },
-        senderName: orderForm.senderName,
-        senderPhone: orderForm.senderPhone,
-        senderAddress: orderForm.senderAddress,
-        receiverName: orderForm.receiverName,
-        receiverPhone: orderForm.receiverPhone,
-        receiverAddress: orderForm.receiverAddress,
-        weight: parseFloat(orderForm.weight) || 0,
-        shippingFee: parseFloat(orderForm.shippingFee) || 0,
+        senderName: orderForm.senderName.trim(),
+        senderPhone: orderForm.senderPhone.trim(),
+        senderAddress: orderForm.senderAddress.trim(),
+        receiverName: orderForm.receiverName.trim(),
+        receiverPhone: orderForm.receiverPhone.trim(),
+        receiverAddress: orderForm.receiverAddress.trim(),
+        weightGram: weightGramVal,
+        shippingFee: parseFloat(orderForm.shippingFee) || 30000,
         codAmount: parseFloat(orderForm.codAmount) || 0,
+        voucherCode: orderForm.voucherCode ? orderForm.voucherCode.trim().toUpperCase() : null,
         items: orderForm.items.map((item) => ({
-          itemName: item.itemName,
+          itemName: item.itemName.trim() || 'Hàng hóa mặc định',
           quantity: parseInt(item.quantity, 10) || 1,
-          price: parseFloat(item.price) || 0,
+          weightGram: parseInt(item.weightGram, 10) || Math.round(weightGramVal / Math.max(1, orderForm.items.length)),
+          declaredValue: parseFloat(item.declaredValue) || 50000,
         })),
       };
 
       const res = await createOrder(payload);
       const createdOrderId = res.orderId || res.id || res.data?.id || res.data?.orderId || `ORD-${Date.now().toString().slice(-6)}`;
+      const trackingNumber = res.trackingNumber || res.data?.trackingNumber || createdOrderId;
       
       const newOrderEntry = {
         orderId: createdOrderId,
+        trackingNumber: trackingNumber,
         receiverName: orderForm.receiverName,
         receiverPhone: orderForm.receiverPhone,
         shippingFee: parseFloat(orderForm.shippingFee) || 0,
@@ -120,22 +116,18 @@ const OrderManagement = () => {
         createdAt: new Date().toLocaleTimeString('vi-VN'),
       };
 
-      setOrderResult({ ...res, resolvedOrderId: createdOrderId });
+      setOrderResult({ ...res, resolvedOrderId: createdOrderId, trackingNumber });
       setRecentOrders((prev) => [newOrderEntry, ...prev]);
 
-      // Reset form on success
-      setOrderForm({
-        senderName: '',
-        senderPhone: '',
-        senderAddress: '',
+      // Reset form but keep helpful defaults
+      setOrderForm((prev) => ({
+        ...prev,
         receiverName: '',
         receiverPhone: '',
         receiverAddress: '',
-        weight: '',
-        shippingFee: '',
-        codAmount: '0',
-        items: [{ itemName: '', quantity: 1, price: '' }],
-      });
+        voucherCode: '',
+        items: [{ itemName: '', quantity: 1, weightGram: 500, declaredValue: 50000 }],
+      }));
     } catch (err) {
       console.error('Create order error:', err);
       setOrderError(err.message || 'Tạo đơn hàng thất bại. Vui lòng kiểm tra lại dữ liệu.');
@@ -428,50 +420,89 @@ const OrderManagement = () => {
 
                 <div className="space-y-3">
                   {orderForm.items.map((item, index) => (
-                    <div key={index} className="flex flex-col sm:flex-row items-center gap-3 bg-white p-3 rounded-lg border border-gray-200">
-                      <div className="w-full sm:flex-1">
+                    <div key={index} className="grid grid-cols-1 sm:grid-cols-12 gap-3 bg-white p-3 rounded-lg border border-gray-200 items-center">
+                      <div className="sm:col-span-4">
+                        <label className="block text-[11px] font-medium text-gray-500 mb-0.5">Tên hàng</label>
                         <input
                           type="text"
-                          placeholder="Tên hàng hóa (ví dụ: Quần áo, Phụ kiện)"
+                          placeholder="Ví dụ: Quần áo, Phụ kiện"
                           required
                           value={item.itemName}
                           onChange={(e) => handleItemChange(index, 'itemName', e.target.value)}
                           className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-red-500 outline-none"
                         />
                       </div>
-                      <div className="w-full sm:w-28">
+                      <div className="sm:col-span-2">
+                        <label className="block text-[11px] font-medium text-gray-500 mb-0.5">SL</label>
                         <input
                           type="number"
                           min="1"
-                          placeholder="SL"
+                          placeholder="1"
                           required
                           value={item.quantity}
                           onChange={(e) => handleItemChange(index, 'quantity', e.target.value)}
                           className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-red-500 outline-none"
                         />
                       </div>
-                      <div className="w-full sm:w-36">
+                      <div className="sm:col-span-2">
+                        <label className="block text-[11px] font-medium text-gray-500 mb-0.5">Cân nặng (g)</label>
                         <input
                           type="number"
-                          min="0"
-                          placeholder="Giá trị (VNĐ)"
-                          value={item.price}
-                          onChange={(e) => handleItemChange(index, 'price', e.target.value)}
+                          min="1"
+                          placeholder="500"
+                          required
+                          value={item.weightGram}
+                          onChange={(e) => handleItemChange(index, 'weightGram', e.target.value)}
                           className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-red-500 outline-none"
                         />
                       </div>
-                      {orderForm.items.length > 1 && (
-                        <button
-                          type="button"
-                          onClick={() => removeItem(index)}
-                          className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-md transition"
-                          title="Xóa hàng này"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      )}
+                      <div className="sm:col-span-3">
+                        <label className="block text-[11px] font-medium text-gray-500 mb-0.5">Giá trị khai báo (VNĐ)</label>
+                        <input
+                          type="number"
+                          min="1"
+                          placeholder="100000"
+                          required
+                          value={item.declaredValue}
+                          onChange={(e) => handleItemChange(index, 'declaredValue', e.target.value)}
+                          className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-red-500 outline-none"
+                        />
+                      </div>
+                      <div className="sm:col-span-1 flex justify-center pt-4 sm:pt-3">
+                        {orderForm.items.length > 1 && (
+                          <button
+                            type="button"
+                            onClick={() => removeItem(index)}
+                            className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-md transition cursor-pointer"
+                            title="Xóa hàng này"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        )}
+                      </div>
                     </div>
                   ))}
+                </div>
+              </div>
+
+              {/* Mã khuyến mãi Voucher áp dụng cho đơn (Tùy chọn) */}
+              <div className="p-4 bg-amber-50/60 rounded-xl border border-amber-200/80 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div className="flex items-center gap-2">
+                  <Ticket className="w-5 h-5 text-amber-600 flex-shrink-0" />
+                  <div>
+                    <p className="text-xs font-bold text-amber-900">Mã Voucher Cho Đơn Hàng (Tùy chọn)</p>
+                    <p className="text-[11px] text-amber-700">Nhập mã ưu đãi giảm cước giao hàng (VD: VIETTEL50, FREESHIP)</p>
+                  </div>
+                </div>
+                <div className="w-full sm:w-64">
+                  <input
+                    type="text"
+                    name="voucherCode"
+                    value={orderForm.voucherCode}
+                    onChange={handleOrderChange}
+                    placeholder="Mã voucher (VIETTEL50)"
+                    className="w-full px-3 py-1.5 text-sm uppercase tracking-wider font-semibold border border-amber-300 rounded-lg focus:ring-2 focus:ring-amber-500 outline-none bg-white"
+                  />
                 </div>
               </div>
 
