@@ -1,6 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import { Package, CheckCircle2, XCircle, Banknote, RefreshCw, AlertCircle, TrendingUp, Activity } from 'lucide-react';
-import { getDashboardStats } from '../api/deliveryApi';
+import React, { useState, useEffect } from "react";
+import {
+  Package,
+  CheckCircle2,
+  XCircle,
+  Banknote,
+  RefreshCw,
+  AlertCircle,
+  TrendingUp,
+  Activity,
+} from "lucide-react";
+import { getDashboardStats } from "../api/deliveryApi";
 
 const Dashboard = () => {
   const [stats, setStats] = useState({
@@ -20,14 +29,25 @@ const Dashboard = () => {
       // Handle response directly or nested under data property
       const data = response?.data || response || {};
       setStats({
-        totalOrders: data.totalOrders ?? data.total_orders ?? data.totalOrderCount ?? 0,
-        successfulOrders: data.successfulOrders ?? data.successful_orders ?? data.deliveredOrders ?? data.completedOrders ?? 0,
-        cancelledOrders: data.cancelledOrders ?? data.cancelled_orders ?? data.canceledOrders ?? 0,
-        totalRevenue: data.totalRevenue ?? data.total_revenue ?? data.revenue ?? 0,
+        totalOrders:
+          data.totalOrders ?? data.total_orders ?? data.totalOrderCount ?? 0,
+        successfulOrders:
+          data.successfulOrders ??
+          data.successful_orders ??
+          data.deliveredOrders ??
+          data.completedOrders ??
+          0,
+        cancelledOrders:
+          data.cancelledOrders ??
+          data.cancelled_orders ??
+          data.canceledOrders ??
+          0,
+        totalRevenue:
+          data.totalRevenue ?? data.total_revenue ?? data.revenue ?? 0,
       });
     } catch (err) {
-      console.error('Error fetching dashboard stats:', err);
-      setError(err.message || 'Không thể tải dữ liệu thống kê từ hệ thống.');
+      console.error("Error fetching dashboard stats:", err);
+      setError(err.message || "Không thể tải dữ liệu thống kê từ hệ thống.");
     } finally {
       setLoading(false);
     }
@@ -38,56 +58,56 @@ const Dashboard = () => {
   }, []);
 
   const formatCurrency = (amount) => {
-    return new Intl.NumberFormat('vi-VN', {
-      style: 'currency',
-      currency: 'VND',
+    return new Intl.NumberFormat("vi-VN", {
+      style: "currency",
+      currency: "VND",
     }).format(amount || 0);
   };
 
   const statCards = [
     {
-      id: 'total',
-      title: 'Tổng Đơn Hàng',
-      value: (stats.totalOrders || 0).toLocaleString('vi-VN'),
+      id: "total",
+      title: "Tổng Đơn Hàng",
+      value: (stats.totalOrders || 0).toLocaleString("vi-VN"),
       icon: Package,
-      color: 'bg-blue-500',
-      lightBg: 'bg-blue-50',
-      textColor: 'text-blue-600',
-      borderColor: 'border-blue-200',
-      subText: 'Tất cả đơn đã tiếp nhận',
+      color: "bg-blue-500",
+      lightBg: "bg-blue-50",
+      textColor: "text-blue-600",
+      borderColor: "border-blue-200",
+      subText: "Tất cả đơn đã tiếp nhận",
     },
     {
-      id: 'success',
-      title: 'Đơn Thành Công',
-      value: (stats.successfulOrders || 0).toLocaleString('vi-VN'),
+      id: "success",
+      title: "Đơn Thành Công",
+      value: (stats.successfulOrders || 0).toLocaleString("vi-VN"),
       icon: CheckCircle2,
-      color: 'bg-emerald-500',
-      lightBg: 'bg-emerald-50',
-      textColor: 'text-emerald-600',
-      borderColor: 'border-emerald-200',
-      subText: 'Giao hàng thành công',
+      color: "bg-emerald-500",
+      lightBg: "bg-emerald-50",
+      textColor: "text-emerald-600",
+      borderColor: "border-emerald-200",
+      subText: "Giao hàng thành công",
     },
     {
-      id: 'cancelled',
-      title: 'Đơn Bị Hủy',
-      value: (stats.cancelledOrders || 0).toLocaleString('vi-VN'),
+      id: "cancelled",
+      title: "Đơn Bị Hủy",
+      value: (stats.cancelledOrders || 0).toLocaleString("vi-VN"),
       icon: XCircle,
-      color: 'bg-rose-500',
-      lightBg: 'bg-rose-50',
-      textColor: 'text-rose-600',
-      borderColor: 'border-rose-200',
-      subText: 'Đơn bị từ chối / trả hàng',
+      color: "bg-rose-500",
+      lightBg: "bg-rose-50",
+      textColor: "text-rose-600",
+      borderColor: "border-rose-200",
+      subText: "Đơn bị từ chối / trả hàng",
     },
     {
-      id: 'revenue',
-      title: 'Tổng Doanh Thu',
+      id: "revenue",
+      title: "Tổng Doanh Thu",
       value: formatCurrency(stats.totalRevenue),
       icon: Banknote,
-      color: 'bg-amber-500',
-      lightBg: 'bg-amber-50',
-      textColor: 'text-amber-600',
-      borderColor: 'border-amber-200',
-      subText: 'Doanh thu cước vận chuyển',
+      color: "bg-amber-500",
+      lightBg: "bg-amber-50",
+      textColor: "text-amber-600",
+      borderColor: "border-amber-200",
+      subText: "Doanh thu cước vận chuyển",
     },
   ];
 
@@ -109,8 +129,8 @@ const Dashboard = () => {
           disabled={loading}
           className="inline-flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 active:bg-red-800 transition font-medium text-sm shadow-sm disabled:opacity-60 cursor-pointer self-start sm:self-auto"
         >
-          <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-          {loading ? 'Đang cập nhật...' : 'Làm mới dữ liệu'}
+          <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
+          {loading ? "Đang cập nhật..." : "Làm mới dữ liệu"}
         </button>
       </div>
 
@@ -142,8 +162,12 @@ const Dashboard = () => {
             >
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-500">{card.title}</p>
-                  <p className={`text-2xl sm:text-3xl font-extrabold mt-2 ${card.textColor}`}>
+                  <p className="text-sm font-medium text-gray-500">
+                    {card.title}
+                  </p>
+                  <p
+                    className={`text-2xl sm:text-3xl font-extrabold mt-2 ${card.textColor}`}
+                  >
                     {loading ? (
                       <span className="inline-block w-24 h-8 bg-gray-200 animate-pulse rounded"></span>
                     ) : (
@@ -151,7 +175,9 @@ const Dashboard = () => {
                     )}
                   </p>
                 </div>
-                <div className={`p-3.5 rounded-xl ${card.lightBg} ${card.textColor}`}>
+                <div
+                  className={`p-3.5 rounded-xl ${card.lightBg} ${card.textColor}`}
+                >
                   <Icon className="w-7 h-7" />
                 </div>
               </div>
@@ -172,9 +198,15 @@ const Dashboard = () => {
               <span className="w-2 h-2 rounded-full bg-green-400 animate-ping"></span>
               Hệ thống đang hoạt động ổn định
             </span>
-            <h2 className="text-xl font-bold">Viettel Delivery Backend Service</h2>
+            <h2 className="text-xl font-bold">
+              Viettel Delivery Backend Service
+            </h2>
             <p className="text-red-100 text-sm mt-1">
-              Kết nối trực tiếp tới cổng API Gateway <code className="bg-red-800/60 px-2 py-0.5 rounded text-white font-mono">http://localhost:8080/api/v1</code>
+              Kết nối trực tiếp tới cổng API Gateway{" "}
+              <code className="bg-red-800/60 px-2 py-0.5 rounded text-white font-mono">
+                {import.meta.env.VITE_API_BASE_URL ||
+                  "http://localhost:8080/api/v1"}
+              </code>
             </p>
           </div>
           <div className="flex items-center gap-3">
@@ -183,7 +215,7 @@ const Dashboard = () => {
               <p className="text-xl font-bold">
                 {stats.totalOrders > 0
                   ? `${Math.round((stats.successfulOrders / stats.totalOrders) * 100)}%`
-                  : '100%'}
+                  : "100%"}
               </p>
             </div>
           </div>
