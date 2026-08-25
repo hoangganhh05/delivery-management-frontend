@@ -8,10 +8,13 @@ import {
   AlertCircle,
   TrendingUp,
   Activity,
+  ShieldCheck,
+  Server,
 } from "lucide-react";
 import { getDashboardStats } from "../api/deliveryApi";
+import { BorderBeam } from "../components/magicui/BorderBeam";
 
-const Dashboard = () => {
+export const Dashboard = () => {
   const [stats, setStats] = useState({
     totalOrders: 0,
     successfulOrders: 0,
@@ -26,7 +29,6 @@ const Dashboard = () => {
     setError(null);
     try {
       const response = await getDashboardStats();
-      // Handle response directly or nested under data property
       const data = response?.data || response || {};
       setStats({
         totalOrders:
@@ -70,10 +72,8 @@ const Dashboard = () => {
       title: "Tổng Đơn Hàng",
       value: (stats.totalOrders || 0).toLocaleString("vi-VN"),
       icon: Package,
-      color: "bg-blue-500",
-      lightBg: "bg-blue-50",
-      textColor: "text-blue-600",
-      borderColor: "border-blue-200",
+      glowColor: "from-blue-600 to-cyan-500",
+      iconColor: "text-cyan-400 bg-cyan-500/10 border-cyan-500/20",
       subText: "Tất cả đơn đã tiếp nhận",
     },
     {
@@ -81,70 +81,64 @@ const Dashboard = () => {
       title: "Đơn Thành Công",
       value: (stats.successfulOrders || 0).toLocaleString("vi-VN"),
       icon: CheckCircle2,
-      color: "bg-emerald-500",
-      lightBg: "bg-emerald-50",
-      textColor: "text-emerald-600",
-      borderColor: "border-emerald-200",
-      subText: "Giao hàng thành công",
+      glowColor: "from-emerald-600 to-teal-500",
+      iconColor: "text-emerald-400 bg-emerald-500/10 border-emerald-500/20",
+      subText: "Giao hàng hoàn tất",
     },
     {
       id: "cancelled",
       title: "Đơn Bị Hủy",
       value: (stats.cancelledOrders || 0).toLocaleString("vi-VN"),
       icon: XCircle,
-      color: "bg-rose-500",
-      lightBg: "bg-rose-50",
-      textColor: "text-rose-600",
-      borderColor: "border-rose-200",
-      subText: "Đơn bị từ chối / trả hàng",
+      glowColor: "from-rose-600 to-red-500",
+      iconColor: "text-rose-400 bg-rose-500/10 border-rose-500/20",
+      subText: "Đơn bị từ chối / hoàn trả",
     },
     {
       id: "revenue",
       title: "Tổng Doanh Thu",
       value: formatCurrency(stats.totalRevenue),
       icon: Banknote,
-      color: "bg-amber-500",
-      lightBg: "bg-amber-50",
-      textColor: "text-amber-600",
-      borderColor: "border-amber-200",
-      subText: "Doanh thu cước vận chuyển",
+      glowColor: "from-amber-600 to-yellow-400",
+      iconColor: "text-amber-300 bg-amber-500/10 border-amber-500/20",
+      subText: "Cước vận chuyển thực thu",
     },
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-4 border-b border-gray-200 gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-4 border-b border-white/10 gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 flex items-center gap-2">
-            <Activity className="w-7 h-7 text-red-600" />
-            Tổng Quan Hệ Thống
+          <h1 className="text-2xl sm:text-3xl font-black text-white flex items-center gap-3">
+            <Activity className="w-7 h-7 text-red-500" />
+            Tổng Quan Hệ Thống (Analytics)
           </h1>
-          <p className="text-sm text-gray-500 mt-1">
-            Báo cáo thống kê thời gian thực hoạt động giao hàng của Viettel Post
+          <p className="text-xs sm:text-sm text-neutral-400 mt-1">
+            Báo cáo thống kê thời gian thực số liệu vận hành và doanh thu Viettel Delivery
           </p>
         </div>
         <button
           onClick={fetchStats}
           disabled={loading}
-          className="inline-flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 active:bg-red-800 transition font-medium text-sm shadow-sm disabled:opacity-60 cursor-pointer self-start sm:self-auto"
+          className="inline-flex items-center gap-2 px-4 py-2.5 bg-white/10 hover:bg-white/20 text-white rounded-xl transition font-semibold text-xs border border-white/10 shadow-sm disabled:opacity-60 cursor-pointer self-start sm:self-auto"
         >
           <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
-          {loading ? "Đang cập nhật..." : "Làm mới dữ liệu"}
+          <span>{loading ? "Đang cập nhật..." : "Làm mới dữ liệu"}</span>
         </button>
       </div>
 
       {/* Error Alert */}
       {error && (
-        <div className="p-4 bg-red-50 border border-red-200 rounded-lg flex items-start gap-3 text-red-700">
-          <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
+        <div className="p-4 rounded-2xl bg-rose-950/50 border border-rose-500/30 flex items-start gap-3 text-rose-200">
+          <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5 text-rose-400" />
           <div className="flex-1">
-            <p className="font-medium">Lỗi kết nối Backend API</p>
-            <p className="text-sm text-red-600 mt-0.5">{error}</p>
+            <p className="font-bold text-sm">Lỗi kết nối Backend API</p>
+            <p className="text-xs text-rose-300 mt-0.5">{error}</p>
           </div>
           <button
             onClick={fetchStats}
-            className="text-xs bg-red-600 text-white px-3 py-1.5 rounded hover:bg-red-700 transition"
+            className="text-xs bg-red-600 text-white px-3 py-1.5 rounded-lg hover:bg-red-700 transition cursor-pointer"
           >
             Thử lại
           </button>
@@ -158,32 +152,30 @@ const Dashboard = () => {
           return (
             <div
               key={card.id}
-              className={`bg-white rounded-xl shadow-sm border ${card.borderColor} p-6 transition-all duration-200 hover:shadow-md relative overflow-hidden`}
+              className="relative overflow-hidden rounded-3xl bg-neutral-900/80 border border-white/10 p-6 backdrop-blur-2xl shadow-glass-md hover:border-white/20 transition-all duration-300"
             >
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-500">
+                  <p className="text-xs font-bold text-neutral-400 uppercase tracking-wider">
                     {card.title}
                   </p>
-                  <p
-                    className={`text-2xl sm:text-3xl font-extrabold mt-2 ${card.textColor}`}
-                  >
+                  <p className="text-2xl sm:text-3xl font-black mt-2 text-white font-mono tracking-tight">
                     {loading ? (
-                      <span className="inline-block w-24 h-8 bg-gray-200 animate-pulse rounded"></span>
+                      <span className="inline-block w-24 h-8 bg-white/10 animate-pulse rounded-lg" />
                     ) : (
                       card.value
                     )}
                   </p>
                 </div>
                 <div
-                  className={`p-3.5 rounded-xl ${card.lightBg} ${card.textColor}`}
+                  className={`p-3.5 rounded-2xl border ${card.iconColor}`}
                 >
-                  <Icon className="w-7 h-7" />
+                  <Icon className="w-6 h-6" />
                 </div>
               </div>
-              <div className="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between text-xs text-gray-500">
+              <div className="mt-4 pt-3 border-t border-white/5 flex items-center justify-between text-xs text-neutral-400">
                 <span>{card.subText}</span>
-                <TrendingUp className="w-3.5 h-3.5 text-gray-400" />
+                <TrendingUp className="w-3.5 h-3.5 text-emerald-400" />
               </div>
             </div>
           );
@@ -191,33 +183,35 @@ const Dashboard = () => {
       </div>
 
       {/* System Status Banner */}
-      <div className="bg-gradient-to-r from-red-600 to-red-700 rounded-xl p-6 text-white shadow-md">
-        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-          <div>
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-white/20 text-white mb-2">
-              <span className="w-2 h-2 rounded-full bg-green-400 animate-ping"></span>
-              Hệ thống đang hoạt động ổn định
+      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-red-600 via-rose-600 to-red-800 p-6 sm:p-8 text-white shadow-glow-red">
+        <BorderBeam size={200} duration={8} delay={1} colorFrom="#ffffff" colorTo="#fef08a" />
+        <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+          <div className="space-y-2">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-white/20 text-white backdrop-blur-md">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+              Hệ Thống Trực Tuyến 24/7 (High Availability)
             </span>
-            <h2 className="text-xl font-bold">
-              Viettel Delivery Backend Service
+            <h2 className="text-xl sm:text-2xl font-black">
+              Viettel Delivery Core API Services
             </h2>
-            <p className="text-red-100 text-sm mt-1">
-              Kết nối trực tiếp tới cổng API Gateway{" "}
-              <code className="bg-red-800/60 px-2 py-0.5 rounded text-white font-mono">
-                {import.meta.env.VITE_API_BASE_URL ||
-                  "http://localhost:8080/api/v1"}
+            <p className="text-red-100 text-xs sm:text-sm font-normal">
+              Đồng bộ dữ liệu thời gian thực qua REST API:{" "}
+              <code className="bg-black/30 border border-white/20 px-2.5 py-1 rounded-lg text-white font-mono text-xs">
+                {import.meta.env.VITE_API_BASE_URL || "http://localhost:8080/api/v1"}
               </code>
             </p>
           </div>
-          <div className="flex items-center gap-3">
-            <div className="text-right hidden sm:block">
-              <p className="text-xs text-red-200">Tỉ lệ giao thành công</p>
-              <p className="text-xl font-bold">
+
+          <div className="flex items-center gap-4 bg-black/20 backdrop-blur-md p-4 rounded-2xl border border-white/10">
+            <div className="text-right">
+              <p className="text-xs text-red-200 uppercase font-semibold">Tỉ lệ giao thành công</p>
+              <p className="text-2xl font-black text-amber-300 font-mono">
                 {stats.totalOrders > 0
                   ? `${Math.round((stats.successfulOrders / stats.totalOrders) * 100)}%`
                   : "100%"}
               </p>
             </div>
+            <ShieldCheck className="w-10 h-10 text-emerald-400 flex-shrink-0" />
           </div>
         </div>
       </div>
