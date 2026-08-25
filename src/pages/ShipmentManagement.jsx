@@ -162,35 +162,35 @@ export const ShipmentManagement = () => {
     <div className="space-y-8">
       {/* Header */}
       <div>
-        <h1 className="text-2xl sm:text-3xl font-black text-white flex items-center gap-3">
-          <ArrowLeftRight className="w-7 h-7 text-red-500" />
+        <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white flex items-center gap-3">
+          <ArrowLeftRight className="w-7 h-7 text-red-600 dark:text-red-500" />
           Điều Phối & Cập Nhật Vận Đơn
         </h1>
-        <p className="text-xs sm:text-sm text-neutral-400 mt-1">
+        <p className="text-xs sm:text-sm text-slate-500 dark:text-neutral-400 mt-1">
           Gán Shipper phụ trách đơn hàng và cập nhật tiến trình lộ trình giao vận theo thời gian thực
         </p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* FORM 1: ASSIGN SHIPPER */}
-        <div className="rounded-3xl bg-neutral-900/80 border border-white/10 p-6 sm:p-8 backdrop-blur-2xl shadow-glass-md flex flex-col justify-between">
+        <div className="rounded-3xl bg-white dark:bg-neutral-900/80 border border-slate-200 dark:border-white/10 p-6 sm:p-8 backdrop-blur-2xl shadow-sm dark:shadow-glass-md flex flex-col justify-between">
           <div>
-            <div className="flex items-center justify-between pb-4 border-b border-white/10 mb-6">
-              <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                <UserCheck className="w-5 h-5 text-red-500" />
+            <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-white/10 mb-6">
+              <h2 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                <UserCheck className="w-5 h-5 text-red-600 dark:text-red-500" />
                 Phân Công Shipper
               </h2>
-              <span className="text-xs font-semibold px-3 py-1 bg-blue-500/20 text-blue-300 border border-blue-500/30 rounded-full">
+              <span className="text-xs font-semibold px-3 py-1 bg-blue-100 dark:bg-blue-500/20 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-500/30 rounded-full">
                 Điều phối viên
               </span>
             </div>
 
             {assignSuccess && (
-              <div className="mb-6 p-4 rounded-2xl bg-emerald-950/60 border border-emerald-500/30 flex items-start gap-3 text-emerald-200">
-                <CheckCircle2 className="w-5 h-5 flex-shrink-0 mt-0.5 text-emerald-400" />
+              <div className="mb-6 p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-500/30 flex items-start gap-3 text-emerald-900 dark:text-emerald-200">
+                <CheckCircle2 className="w-5 h-5 flex-shrink-0 mt-0.5 text-emerald-600 dark:text-emerald-400" />
                 <div>
-                  <p className="font-bold text-sm text-white">Phân công thành công!</p>
-                  <p className="text-xs mt-0.5 text-emerald-300">
+                  <p className="font-bold text-sm text-slate-900 dark:text-white">Phân công thành công!</p>
+                  <p className="text-xs mt-0.5 text-emerald-700 dark:text-emerald-300">
                     {typeof assignSuccess === "string"
                       ? assignSuccess
                       : assignSuccess.message || "Đơn hàng đã được bàn giao cho Shipper."}
@@ -200,18 +200,18 @@ export const ShipmentManagement = () => {
             )}
 
             {assignError && (
-              <div className="mb-6 p-4 rounded-2xl bg-rose-950/50 border border-rose-500/30 flex items-start gap-3 text-rose-200">
-                <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5 text-rose-400" />
+              <div className="mb-6 p-4 rounded-2xl bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-500/30 flex items-start gap-3 text-rose-800 dark:text-rose-200">
+                <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5 text-rose-600 dark:text-rose-400" />
                 <div>
                   <p className="font-bold text-sm">Lỗi phân công Shipper</p>
-                  <p className="text-xs text-rose-300 mt-0.5">{assignError}</p>
+                  <p className="text-xs text-rose-700 dark:text-rose-300 mt-0.5">{assignError}</p>
                 </div>
               </div>
             )}
 
             <form onSubmit={handleAssignSubmit} className="space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-neutral-300 mb-1.5">
+                <label className="block text-xs font-semibold text-slate-700 dark:text-neutral-300 mb-1.5">
                   Mã Đơn Hàng (Order ID) *
                 </label>
                 <input
@@ -222,14 +222,14 @@ export const ShipmentManagement = () => {
                     setAssignForm({ ...assignForm, orderId: e.target.value })
                   }
                   placeholder="Nhập ID đơn hàng (Ví dụ: 1, 2, 3...)"
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-neutral-950/80 border border-white/10 text-white placeholder-neutral-500 focus:border-red-500 focus:ring-2 focus:ring-red-500/20 text-sm outline-none"
+                  className="w-full text-sm"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-neutral-300 mb-1.5 flex items-center justify-between">
+                <label className="block text-xs font-semibold text-slate-700 dark:text-neutral-300 mb-1.5 flex items-center justify-between">
                   <span>Chọn Nhân Viên Shipper *</span>
-                  <span className="text-[11px] text-neutral-400 font-normal">
+                  <span className="text-[11px] text-slate-500 dark:text-neutral-400 font-normal">
                     {shippers.length} nhân viên khả dụng
                   </span>
                 </label>
@@ -242,10 +242,10 @@ export const ShipmentManagement = () => {
                         shipperId: e.target.value,
                       })
                     }
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-neutral-950 border border-white/10 text-white text-sm outline-none focus:border-red-500"
+                    className="w-full text-sm"
                   >
                     {shippers.map((s) => (
-                      <option key={s.id} value={s.id} className="bg-neutral-950 text-white">
+                      <option key={s.id} value={s.id} className="bg-white dark:bg-neutral-950 text-slate-900 dark:text-white">
                         {s.fullName} ({s.username}) - SĐT: {s.phoneNumber} [ID: #{s.id}]
                       </option>
                     ))}
@@ -262,13 +262,13 @@ export const ShipmentManagement = () => {
                       })
                     }
                     placeholder="VD: 2 hoặc 3"
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-neutral-950/80 border border-white/10 text-white text-sm outline-none focus:border-red-500"
+                    className="w-full text-sm"
                   />
                 )}
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-neutral-300 mb-1.5">
+                <label className="block text-xs font-semibold text-slate-700 dark:text-neutral-300 mb-1.5">
                   Ghi chú điều phối (Tùy chọn)
                 </label>
                 <textarea
@@ -278,7 +278,7 @@ export const ShipmentManagement = () => {
                     setAssignForm({ ...assignForm, note: e.target.value })
                   }
                   placeholder="Giao gấp trong buổi sáng, gọi trước khi đến..."
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-neutral-950/80 border border-white/10 text-white placeholder-neutral-500 focus:border-red-500 focus:ring-2 focus:ring-red-500/20 text-sm outline-none resize-none"
+                  className="w-full text-sm resize-none"
                 />
               </div>
 
@@ -295,24 +295,24 @@ export const ShipmentManagement = () => {
         </div>
 
         {/* FORM 2: UPDATE STATUS */}
-        <div className="rounded-3xl bg-neutral-900/80 border border-white/10 p-6 sm:p-8 backdrop-blur-2xl shadow-glass-md flex flex-col justify-between">
+        <div className="rounded-3xl bg-white dark:bg-neutral-900/80 border border-slate-200 dark:border-white/10 p-6 sm:p-8 backdrop-blur-2xl shadow-sm dark:shadow-glass-md flex flex-col justify-between">
           <div>
-            <div className="flex items-center justify-between pb-4 border-b border-white/10 mb-6">
-              <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                <RefreshCw className="w-5 h-5 text-red-500" />
+            <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-white/10 mb-6">
+              <h2 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                <RefreshCw className="w-5 h-5 text-red-600 dark:text-red-500" />
                 Cập Nhật Trạng Thái Đơn
               </h2>
-              <span className="text-xs font-semibold px-3 py-1 bg-amber-500/20 text-amber-300 border border-amber-500/30 rounded-full">
+              <span className="text-xs font-semibold px-3 py-1 bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-500/30 rounded-full">
                 Shipper / Vận hành
               </span>
             </div>
 
             {statusSuccess && (
-              <div className="mb-6 p-4 rounded-2xl bg-emerald-950/60 border border-emerald-500/30 flex items-start gap-3 text-emerald-200">
-                <CheckCircle2 className="w-5 h-5 flex-shrink-0 mt-0.5 text-emerald-400" />
+              <div className="mb-6 p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-500/30 flex items-start gap-3 text-emerald-900 dark:text-emerald-200">
+                <CheckCircle2 className="w-5 h-5 flex-shrink-0 mt-0.5 text-emerald-600 dark:text-emerald-400" />
                 <div>
-                  <p className="font-bold text-sm text-white">Cập nhật thành công!</p>
-                  <p className="text-xs mt-0.5 text-emerald-300">
+                  <p className="font-bold text-sm text-slate-900 dark:text-white">Cập nhật thành công!</p>
+                  <p className="text-xs mt-0.5 text-emerald-700 dark:text-emerald-300">
                     {typeof statusSuccess === "string"
                       ? statusSuccess
                       : statusSuccess.message || "Lộ trình đơn hàng đã được cập nhật."}
@@ -322,18 +322,18 @@ export const ShipmentManagement = () => {
             )}
 
             {statusError && (
-              <div className="mb-6 p-4 rounded-2xl bg-rose-950/50 border border-rose-500/30 flex items-start gap-3 text-rose-200">
-                <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5 text-rose-400" />
+              <div className="mb-6 p-4 rounded-2xl bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-500/30 flex items-start gap-3 text-rose-800 dark:text-rose-200">
+                <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5 text-rose-600 dark:text-rose-400" />
                 <div>
                   <p className="font-bold text-sm">Lỗi cập nhật trạng thái</p>
-                  <p className="text-xs text-rose-300 mt-0.5">{statusError}</p>
+                  <p className="text-xs text-rose-700 dark:text-rose-300 mt-0.5">{statusError}</p>
                 </div>
               </div>
             )}
 
             <form onSubmit={handleStatusSubmit} className="space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-neutral-300 mb-1.5">
+                <label className="block text-xs font-semibold text-slate-700 dark:text-neutral-300 mb-1.5">
                   Mã Đơn Hàng (Order ID) *
                 </label>
                 <input
@@ -344,12 +344,12 @@ export const ShipmentManagement = () => {
                     setStatusForm({ ...statusForm, orderId: e.target.value })
                   }
                   placeholder="Nhập ID đơn hàng (Ví dụ: 1, 2, 3...)"
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-neutral-950/80 border border-white/10 text-white placeholder-neutral-500 focus:border-red-500 text-sm outline-none"
+                  className="w-full text-sm"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-neutral-300 mb-1.5">
+                <label className="block text-xs font-semibold text-slate-700 dark:text-neutral-300 mb-1.5">
                   Trạng thái mới *
                 </label>
                 <select
@@ -357,10 +357,10 @@ export const ShipmentManagement = () => {
                   onChange={(e) =>
                     setStatusForm({ ...statusForm, status: e.target.value })
                   }
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-neutral-950 border border-white/10 text-white text-sm outline-none focus:border-red-500"
+                  className="w-full text-sm"
                 >
                   {statusOptions.map((opt) => (
-                    <option key={opt.value} value={opt.value} className="bg-neutral-950 text-white">
+                    <option key={opt.value} value={opt.value} className="bg-white dark:bg-neutral-950 text-slate-900 dark:text-white">
                       {opt.label}
                     </option>
                   ))}
@@ -368,8 +368,8 @@ export const ShipmentManagement = () => {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-neutral-300 mb-1.5 flex items-center gap-1.5">
-                  <ImageIcon className="w-3.5 h-3.5 text-neutral-400" />
+                <label className="block text-xs font-semibold text-slate-700 dark:text-neutral-300 mb-1.5 flex items-center gap-1.5">
+                  <ImageIcon className="w-3.5 h-3.5 text-slate-400 dark:text-neutral-400" />
                   Đường dẫn ảnh bằng chứng giao nhận (Proof Image URL)
                 </label>
                 <input
@@ -382,13 +382,13 @@ export const ShipmentManagement = () => {
                     })
                   }
                   placeholder="https://example.com/delivery-proof.jpg"
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-neutral-950/80 border border-white/10 text-white placeholder-neutral-500 focus:border-red-500 text-sm outline-none"
+                  className="w-full text-sm"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-neutral-300 mb-1.5 flex items-center gap-1.5">
-                  <FileText className="w-3.5 h-3.5 text-neutral-400" />
+                <label className="block text-xs font-semibold text-slate-700 dark:text-neutral-300 mb-1.5 flex items-center gap-1.5">
+                  <FileText className="w-3.5 h-3.5 text-slate-400 dark:text-neutral-400" />
                   Ghi chú tiến trình
                 </label>
                 <textarea
@@ -398,14 +398,14 @@ export const ShipmentManagement = () => {
                     setStatusForm({ ...statusForm, note: e.target.value })
                   }
                   placeholder="Người nhận đã ký nhận bưu kiện thành công..."
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-neutral-950/80 border border-white/10 text-white placeholder-neutral-500 focus:border-red-500 text-sm outline-none resize-none"
+                  className="w-full text-sm resize-none"
                 />
               </div>
 
               <button
                 type="submit"
                 disabled={statusLoading}
-                className="w-full inline-flex items-center justify-center gap-2 px-5 py-3 bg-white/10 hover:bg-white/20 text-white rounded-xl hover:brightness-110 active:scale-[0.98] transition font-bold text-sm disabled:opacity-50 cursor-pointer border border-white/10"
+                className="w-full inline-flex items-center justify-center gap-2 px-5 py-3 bg-slate-100 hover:bg-slate-200 dark:bg-white/10 dark:hover:bg-white/20 text-slate-800 dark:text-white rounded-xl hover:brightness-110 active:scale-[0.98] transition font-bold text-sm disabled:opacity-50 cursor-pointer border border-slate-200 dark:border-white/10"
               >
                 <RefreshCw
                   className={`w-4 h-4 ${statusLoading ? "animate-spin" : ""}`}
@@ -418,16 +418,16 @@ export const ShipmentManagement = () => {
       </div>
 
       {/* SECTION 3: SHIPPER TEAM LIST */}
-      <div className="rounded-3xl bg-neutral-900/80 border border-white/10 p-6 sm:p-8 backdrop-blur-2xl shadow-glass-md">
-        <div className="flex items-center justify-between pb-4 border-b border-white/10 mb-6">
-          <div className="flex items-center gap-2 text-white">
-            <Users className="w-5 h-5 text-red-500" />
+      <div className="rounded-3xl bg-white dark:bg-neutral-900/80 border border-slate-200 dark:border-white/10 p-6 sm:p-8 backdrop-blur-2xl shadow-sm dark:shadow-glass-md">
+        <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-white/10 mb-6">
+          <div className="flex items-center gap-2 text-slate-900 dark:text-white">
+            <Users className="w-5 h-5 text-red-600 dark:text-red-500" />
             <h2 className="text-lg font-bold">Đội Ngũ Nhân Viên Giao Hàng (Shipper)</h2>
           </div>
           <button
             onClick={fetchShippersList}
             disabled={shippersLoading}
-            className="inline-flex items-center gap-1.5 text-xs font-semibold text-neutral-300 hover:text-white bg-white/5 hover:bg-white/10 px-3 py-1.5 rounded-xl border border-white/10 transition cursor-pointer"
+            className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-700 dark:text-neutral-300 hover:text-slate-900 dark:hover:text-white bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-white/10 transition cursor-pointer"
           >
             <RefreshCw
               className={`w-3.5 h-3.5 ${shippersLoading ? "animate-spin" : ""}`}
@@ -437,7 +437,7 @@ export const ShipmentManagement = () => {
         </div>
 
         {shippers.length === 0 ? (
-          <div className="p-8 text-center text-xs text-neutral-500">
+          <div className="p-8 text-center text-xs text-slate-400 dark:text-neutral-500">
             {shippersLoading
               ? "Đang tải danh sách shipper..."
               : "Chưa có thông tin nhân viên shipper nào trong hệ thống."}
@@ -447,7 +447,7 @@ export const ShipmentManagement = () => {
             {shippers.map((s) => (
               <div
                 key={s.id}
-                className="p-5 rounded-2xl border border-white/5 bg-white/[0.03] hover:bg-white/[0.06] hover:border-red-500/30 transition-all duration-300 space-y-3"
+                className="p-5 rounded-2xl border border-slate-200/80 dark:border-white/5 bg-slate-50 dark:bg-white/[0.03] hover:bg-slate-100 dark:hover:bg-white/[0.06] hover:border-red-300 dark:hover:border-red-500/30 transition-all duration-300 space-y-3 shadow-xs"
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
@@ -455,27 +455,27 @@ export const ShipmentManagement = () => {
                       {s.fullName ? s.fullName.charAt(0) : "S"}
                     </div>
                     <div>
-                      <h3 className="font-bold text-sm text-white leading-tight">
+                      <h3 className="font-bold text-sm text-slate-900 dark:text-white leading-tight">
                         {s.fullName}
                       </h3>
-                      <span className="text-[11px] text-neutral-400">
+                      <span className="text-[11px] text-slate-500 dark:text-neutral-400 font-mono">
                         @{s.username} • ID: #{s.id}
                       </span>
                     </div>
                   </div>
-                  <span className="text-[10px] font-bold px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 flex items-center gap-1">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                  <span className="text-[10px] font-bold px-2.5 py-1 rounded-full bg-emerald-100 dark:bg-emerald-500/20 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-500/30 flex items-center gap-1">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-pulse" />
                     {s.status || "Sẵn sàng"}
                   </span>
                 </div>
 
-                <div className="text-xs text-neutral-300 space-y-1.5 pt-2 border-t border-white/5">
+                <div className="text-xs text-slate-600 dark:text-neutral-300 space-y-1.5 pt-2 border-t border-slate-200/60 dark:border-white/5">
                   <div className="flex items-center gap-2">
-                    <Phone className="w-3.5 h-3.5 text-neutral-500" />
+                    <Phone className="w-3.5 h-3.5 text-slate-400 dark:text-neutral-500" />
                     <span>{s.phoneNumber || "Chưa cập nhật SĐT"}</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Mail className="w-3.5 h-3.5 text-neutral-500" />
+                    <Mail className="w-3.5 h-3.5 text-slate-400 dark:text-neutral-500" />
                     <span className="truncate">{s.email || "Chưa cập nhật Email"}</span>
                   </div>
                 </div>
@@ -483,7 +483,7 @@ export const ShipmentManagement = () => {
                 <button
                   type="button"
                   onClick={() => quickAssignShipper(s.id)}
-                  className="w-full mt-2 inline-flex items-center justify-center gap-1.5 text-xs font-bold py-2 px-3 bg-red-600/20 hover:bg-red-600 text-red-300 hover:text-white border border-red-500/30 rounded-xl transition cursor-pointer"
+                  className="w-full mt-2 inline-flex items-center justify-center gap-1.5 text-xs font-bold py-2 px-3 bg-red-50 dark:bg-red-600/20 hover:bg-red-600 text-red-600 dark:text-red-300 hover:text-white border border-red-200 dark:border-red-500/30 rounded-xl transition cursor-pointer"
                 >
                   <UserCheck className="w-3.5 h-3.5" />
                   <span>Chọn Shipper này</span>
