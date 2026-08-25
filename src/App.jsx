@@ -1,29 +1,31 @@
-import React, { useState, useEffect } from 'react';
-import Navbar from './components/Navbar';
-import Dashboard from './pages/Dashboard';
-import OrderManagement from './pages/OrderManagement';
-import ShipmentManagement from './pages/ShipmentManagement';
-import Tracking from './pages/Tracking';
-import Login from './pages/Login';
-import { CheckCircle2, AlertCircle, X } from 'lucide-react';
+import React, { useState, useEffect } from "react";
+import { Navbar } from "./components/Navbar";
+import { Footer } from "./components/Footer";
+import Dashboard from "./pages/Dashboard";
+import OrderManagement from "./pages/OrderManagement";
+import ShipmentManagement from "./pages/ShipmentManagement";
+import Tracking from "./pages/Tracking";
+import Login from "./pages/Login";
+import { CheckCircle2, AlertCircle, X, ShieldAlert } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 function App() {
   // Authentication State
   const [user, setUser] = useState(() => {
-    const token = localStorage.getItem('token');
-    const username = localStorage.getItem('username');
-    const role = localStorage.getItem('role');
+    const token = localStorage.getItem("token");
+    const username = localStorage.getItem("username");
+    const role = localStorage.getItem("role");
     return token ? { token, username, role } : null;
   });
 
   // Active Tab State: 'tracking', 'orders', 'shipments', 'dashboard', 'login'
   const [activeTab, setActiveTab] = useState(() => {
-    const token = localStorage.getItem('token');
-    const role = localStorage.getItem('role');
-    if (!token) return 'tracking';
-    if (role === 'ADMIN') return 'dashboard';
-    if (role === 'SHIPPER') return 'shipments';
-    return 'orders';
+    const token = localStorage.getItem("token");
+    const role = localStorage.getItem("role");
+    if (!token) return "tracking";
+    if (role === "ADMIN") return "dashboard";
+    if (role === "SHIPPER") return "shipments";
+    return "orders";
   });
 
   // VNPay payment result banner state
@@ -32,22 +34,27 @@ function App() {
   // Check URL query parameters for VNPay Return Callback
   useEffect(() => {
     const query = new URLSearchParams(window.location.search);
-    const responseCode = query.get('vnp_ResponseCode');
-    const transactionNo = query.get('vnp_TransactionNo');
-    const amount = query.get('vnp_Amount');
+    const responseCode = query.get("vnp_ResponseCode");
+    const transactionNo = query.get("vnp_TransactionNo");
+    const amount = query.get("vnp_Amount");
 
     if (responseCode) {
-      if (responseCode === '00') {
+      if (responseCode === "00") {
         const formattedAmount = amount
-          ? new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(parseInt(amount, 10) / 100)
-          : '';
+          ? new Intl.NumberFormat("vi-VN", {
+              style: "currency",
+              currency: "VND",
+            }).format(parseInt(amount, 10) / 100)
+          : "";
         setPaymentNotice({
-          type: 'success',
-          message: `Giao dịch VNPay thành công! Mã GD: ${transactionNo || 'N/A'}${formattedAmount ? ` - Số tiền: ${formattedAmount}` : ''}`,
+          type: "success",
+          message: `Giao dịch VNPay thành công! Mã GD: ${
+            transactionNo || "N/A"
+          }${formattedAmount ? ` - Số tiền: ${formattedAmount}` : ""}`,
         });
       } else {
         setPaymentNotice({
-          type: 'error',
+          type: "error",
           message: `Thanh toán VNPay không thành công hoặc đã bị hủy (Mã lỗi: ${responseCode}).`,
         });
       }
@@ -60,62 +67,62 @@ function App() {
   useEffect(() => {
     const handleUnauthorized = () => {
       setUser(null);
-      setActiveTab('login');
+      setActiveTab("login");
     };
 
-    window.addEventListener('auth:unauthorized', handleUnauthorized);
+    window.addEventListener("auth:unauthorized", handleUnauthorized);
     return () => {
-      window.removeEventListener('auth:unauthorized', handleUnauthorized);
+      window.removeEventListener("auth:unauthorized", handleUnauthorized);
     };
   }, []);
 
   const handleLoginSuccess = (userData) => {
     setUser(userData);
-    const role = (userData.role || '').toUpperCase();
-    if (role === 'ADMIN') {
-      setActiveTab('dashboard');
-    } else if (role === 'SHIPPER') {
-      setActiveTab('shipments');
+    const role = (userData.role || "").toUpperCase();
+    if (role === "ADMIN") {
+      setActiveTab("dashboard");
+    } else if (role === "SHIPPER") {
+      setActiveTab("shipments");
     } else {
-      setActiveTab('orders');
+      setActiveTab("orders");
     }
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('username');
-    localStorage.removeItem('role');
+    localStorage.removeItem("token");
+    localStorage.removeItem("username");
+    localStorage.removeItem("role");
     setUser(null);
-    setActiveTab('tracking');
+    setActiveTab("tracking");
   };
 
   // Render view based on activeTab and permissions
   const renderContent = () => {
-    const role = user?.role?.toUpperCase() || 'GUEST';
+    const role = user?.role?.toUpperCase() || "GUEST";
 
     switch (activeTab) {
-      case 'tracking':
+      case "tracking":
         return <Tracking />;
 
-      case 'login':
+      case "login":
         return <Login onLoginSuccess={handleLoginSuccess} />;
 
-      case 'orders':
+      case "orders":
         if (!user) {
           return <Login onLoginSuccess={handleLoginSuccess} />;
         }
         return <OrderManagement />;
 
-      case 'shipments':
+      case "shipments":
         if (!user) {
           return <Login onLoginSuccess={handleLoginSuccess} />;
         }
-        if (role !== 'ADMIN' && role !== 'SHIPPER') {
+        if (role !== "ADMIN" && role !== "SHIPPER") {
           return (
-            <div className="p-8 bg-white rounded-2xl shadow-sm text-center">
-              <AlertCircle className="w-12 h-12 text-rose-500 mx-auto mb-3" />
-              <h2 className="text-xl font-bold text-gray-900">Truy cập bị từ chối</h2>
-              <p className="text-sm text-gray-500 mt-1">
+            <div className="p-8 sm:p-12 rounded-3xl bg-neutral-900/80 border border-white/10 text-center backdrop-blur-2xl shadow-glass-md max-w-lg mx-auto space-y-3">
+              <ShieldAlert className="w-12 h-12 text-rose-500 mx-auto" />
+              <h2 className="text-xl font-bold text-white">Truy cập bị từ chối</h2>
+              <p className="text-xs sm:text-sm text-neutral-400">
                 Chức năng Điều Phối chỉ dành cho Quản Trị Viên (ADMIN) hoặc Nhân Viên Giao Hàng (SHIPPER).
               </p>
             </div>
@@ -123,16 +130,16 @@ function App() {
         }
         return <ShipmentManagement />;
 
-      case 'dashboard':
+      case "dashboard":
         if (!user) {
           return <Login onLoginSuccess={handleLoginSuccess} />;
         }
-        if (role !== 'ADMIN') {
+        if (role !== "ADMIN") {
           return (
-            <div className="p-8 bg-white rounded-2xl shadow-sm text-center">
-              <AlertCircle className="w-12 h-12 text-rose-500 mx-auto mb-3" />
-              <h2 className="text-xl font-bold text-gray-900">Truy cập bị từ chối</h2>
-              <p className="text-sm text-gray-500 mt-1">
+            <div className="p-8 sm:p-12 rounded-3xl bg-neutral-900/80 border border-white/10 text-center backdrop-blur-2xl shadow-glass-md max-w-lg mx-auto space-y-3">
+              <ShieldAlert className="w-12 h-12 text-rose-500 mx-auto" />
+              <h2 className="text-xl font-bold text-white">Truy cập bị từ chối</h2>
+              <p className="text-xs sm:text-sm text-neutral-400">
                 Trang Dashboard phân tích doanh thu và số liệu chỉ dành cho Quản Trị Viên (ADMIN).
               </p>
             </div>
@@ -146,8 +153,14 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 text-gray-800 flex flex-col font-sans">
-      {/* Header / Navbar */}
+    <div className="min-h-screen bg-neutral-950 text-neutral-100 flex flex-col font-sans relative selection:bg-red-600/30 selection:text-red-200">
+      {/* Background Ambient Glows */}
+      <div className="fixed inset-0 pointer-events-none -z-20 overflow-hidden">
+        <div className="absolute top-[-10%] left-[20%] w-[600px] h-[600px] bg-red-600/10 rounded-full blur-[140px]" />
+        <div className="absolute bottom-[10%] right-[10%] w-[500px] h-[500px] bg-amber-500/5 rounded-full blur-[160px]" />
+      </div>
+
+      {/* Floating Header / Navbar */}
       <Navbar
         activeTab={activeTab}
         setActiveTab={setActiveTab}
@@ -156,49 +169,59 @@ function App() {
       />
 
       {/* VNPay Payment Notice Banner */}
-      {paymentNotice && (
-        <div className="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 pt-4">
-          <div
-            className={`p-4 rounded-xl flex items-center justify-between shadow-sm border ${
-              paymentNotice.type === 'success'
-                ? 'bg-emerald-50 text-emerald-900 border-emerald-200'
-                : 'bg-rose-50 text-rose-900 border-rose-200'
-            }`}
+      <AnimatePresence>
+        {paymentNotice && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 pt-4 z-40"
           >
-            <div className="flex items-center gap-3">
-              {paymentNotice.type === 'success' ? (
-                <CheckCircle2 className="w-5 h-5 text-emerald-600 flex-shrink-0" />
-              ) : (
-                <AlertCircle className="w-5 h-5 text-rose-600 flex-shrink-0" />
-              )}
-              <span className="text-sm font-medium">{paymentNotice.message}</span>
-            </div>
-            <button
-              onClick={() => setPaymentNotice(null)}
-              className="text-gray-400 hover:text-gray-600 p-1 rounded-md"
+            <div
+              className={`p-4 rounded-2xl flex items-center justify-between shadow-glass-sm border backdrop-blur-xl ${
+                paymentNotice.type === "success"
+                  ? "bg-emerald-950/60 text-emerald-200 border-emerald-500/30"
+                  : "bg-rose-950/60 text-rose-200 border-rose-500/30"
+              }`}
             >
-              <X className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
-      )}
+              <div className="flex items-center gap-3">
+                {paymentNotice.type === "success" ? (
+                  <CheckCircle2 className="w-5 h-5 text-emerald-400 flex-shrink-0" />
+                ) : (
+                  <AlertCircle className="w-5 h-5 text-rose-400 flex-shrink-0" />
+                )}
+                <span className="text-xs sm:text-sm font-medium">
+                  {paymentNotice.message}
+                </span>
+              </div>
+              <button
+                onClick={() => setPaymentNotice(null)}
+                className="text-neutral-400 hover:text-white p-1 rounded-md transition cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-      {/* Main Content Body */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {renderContent()}
+      {/* Main Content Body with Framer Motion Page Transition */}
+      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activeTab}
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -15 }}
+            transition={{ duration: 0.25, ease: "easeInOut" }}
+          >
+            {renderContent()}
+          </motion.div>
+        </AnimatePresence>
       </main>
 
-      {/* Footer */}
-      <footer className="bg-white border-t border-gray-200 py-6 mt-12 text-center text-xs text-gray-500">
-        <div className="max-w-7xl mx-auto px-4">
-          <p className="font-semibold text-gray-700">
-            Hệ Thống Viettel Delivery Management &copy; {new Date().getFullYear()}
-          </p>
-          <p className="mt-1 text-gray-400">
-            Tích hợp Spring Boot Security JWT • Cổng thanh toán trực tuyến VNPay Sandbox • Tra cứu hành trình thông minh
-          </p>
-        </div>
-      </footer>
+      {/* Luxury Footer */}
+      <Footer />
     </div>
   );
 }
