@@ -119,10 +119,10 @@ function App() {
         }
         if (role !== "ADMIN" && role !== "SHIPPER") {
           return (
-            <div className="p-8 sm:p-12 rounded-3xl bg-neutral-900/80 border border-white/10 text-center backdrop-blur-2xl shadow-glass-md max-w-lg mx-auto space-y-3">
+            <div className="p-8 sm:p-12 rounded-2xl bg-white border border-slate-200 text-center shadow-sm max-w-lg mx-auto space-y-3">
               <ShieldAlert className="w-12 h-12 text-rose-500 mx-auto" />
-              <h2 className="text-xl font-bold text-white">Truy cập bị từ chối</h2>
-              <p className="text-xs sm:text-sm text-neutral-400">
+              <h2 className="text-xl font-bold text-slate-900">Truy cập bị từ chối</h2>
+              <p className="text-xs sm:text-sm text-slate-500">
                 Chức năng Điều Phối chỉ dành cho Quản Trị Viên (ADMIN) hoặc Nhân Viên Giao Hàng (SHIPPER).
               </p>
             </div>
@@ -136,10 +136,10 @@ function App() {
         }
         if (role !== "ADMIN") {
           return (
-            <div className="p-8 sm:p-12 rounded-3xl bg-neutral-900/80 border border-white/10 text-center backdrop-blur-2xl shadow-glass-md max-w-lg mx-auto space-y-3">
+            <div className="p-8 sm:p-12 rounded-2xl bg-white border border-slate-200 text-center shadow-sm max-w-lg mx-auto space-y-3">
               <ShieldAlert className="w-12 h-12 text-rose-500 mx-auto" />
-              <h2 className="text-xl font-bold text-white">Truy cập bị từ chối</h2>
-              <p className="text-xs sm:text-sm text-neutral-400">
+              <h2 className="text-xl font-bold text-slate-900">Truy cập bị từ chối</h2>
+              <p className="text-xs sm:text-sm text-slate-500">
                 Trang Dashboard phân tích doanh thu và số liệu chỉ dành cho Quản Trị Viên (ADMIN).
               </p>
             </div>
@@ -153,14 +153,14 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-neutral-950 text-neutral-100 flex flex-col font-sans relative selection:bg-red-600/30 selection:text-red-200">
-      {/* Background Ambient Glows */}
+    <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-sans relative selection:bg-red-600/20 selection:text-red-700">
+      {/* Background Subtle Gradient Accents */}
       <div className="fixed inset-0 pointer-events-none -z-20 overflow-hidden">
-        <div className="absolute top-[-10%] left-[20%] w-[600px] h-[600px] bg-red-600/10 rounded-full blur-[140px]" />
-        <div className="absolute bottom-[10%] right-[10%] w-[500px] h-[500px] bg-amber-500/5 rounded-full blur-[160px]" />
+        <div className="absolute top-[-10%] left-[20%] w-[600px] h-[600px] bg-red-600/5 rounded-full blur-[140px]" />
+        <div className="absolute bottom-[10%] right-[10%] w-[500px] h-[500px] bg-rose-500/5 rounded-full blur-[160px]" />
       </div>
 
-      {/* Floating Header / Navbar */}
+      {/* Floating Clean Navbar */}
       <Navbar
         activeTab={activeTab}
         setActiveTab={setActiveTab}
@@ -178,25 +178,25 @@ function App() {
             className="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 pt-4 z-40"
           >
             <div
-              className={`p-4 rounded-2xl flex items-center justify-between shadow-glass-sm border backdrop-blur-xl ${
+              className={`p-4 rounded-2xl flex items-center justify-between shadow-sm border ${
                 paymentNotice.type === "success"
-                  ? "bg-emerald-950/60 text-emerald-200 border-emerald-500/30"
-                  : "bg-rose-950/60 text-rose-200 border-rose-500/30"
+                  ? "bg-emerald-50 text-emerald-900 border-emerald-200"
+                  : "bg-rose-50 text-rose-900 border-rose-200"
               }`}
             >
               <div className="flex items-center gap-3">
                 {paymentNotice.type === "success" ? (
-                  <CheckCircle2 className="w-5 h-5 text-emerald-400 flex-shrink-0" />
+                  <CheckCircle2 className="w-5 h-5 text-emerald-600 flex-shrink-0" />
                 ) : (
-                  <AlertCircle className="w-5 h-5 text-rose-400 flex-shrink-0" />
+                  <AlertCircle className="w-5 h-5 text-rose-600 flex-shrink-0" />
                 )}
-                <span className="text-xs sm:text-sm font-medium">
+                <span className="text-xs sm:text-sm font-semibold">
                   {paymentNotice.message}
                 </span>
               </div>
               <button
                 onClick={() => setPaymentNotice(null)}
-                className="text-neutral-400 hover:text-white p-1 rounded-md transition cursor-pointer"
+                className="text-slate-400 hover:text-slate-600 p-1 rounded-md transition cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -205,22 +205,22 @@ function App() {
         )}
       </AnimatePresence>
 
-      {/* Main Content Body with Framer Motion Page Transition */}
+      {/* Main Content Body */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
         <AnimatePresence mode="wait">
           <motion.div
             key={activeTab}
-            initial={{ opacity: 0, y: 15 }}
+            initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -15 }}
-            transition={{ duration: 0.25, ease: "easeInOut" }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.2, ease: "easeInOut" }}
           >
             {renderContent()}
           </motion.div>
         </AnimatePresence>
       </main>
 
-      {/* Luxury Footer */}
+      {/* Clean Footer */}
       <Footer />
     </div>
   );
