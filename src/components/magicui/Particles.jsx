@@ -120,7 +120,7 @@ export function Particles({
         0,
         0,
         canvasSize.current.w,
-        canvasSize.current.h
+        canvasSize.current.h,
       );
     }
   };
@@ -151,7 +151,7 @@ export function Particles({
       ];
       const closestEdge = edge.reduce((a, b) => Math.min(a, b));
       const remapLog = parseFloat(
-        remapValue(closestEdge, 0, 20, 0, 1).toFixed(2)
+        remapValue(closestEdge, 0, 20, 0, 1).toFixed(2),
       );
       if (remapLog > 1) {
         circle.alpha += 0.02;

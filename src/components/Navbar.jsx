@@ -63,24 +63,25 @@ export const Navbar = ({ activeTab, setActiveTab, user, onLogout }) => {
         return {
           label: "ADMIN",
           className:
-            "bg-amber-100 text-amber-900 border border-amber-300 font-extrabold",
+            "bg-amber-500/20 text-amber-300 border border-amber-500/40 font-extrabold",
         };
       case "SHIPPER":
         return {
           label: "SHIPPER",
           className:
-            "bg-blue-100 text-blue-900 border border-blue-300 font-bold",
+            "bg-blue-500/20 text-blue-300 border border-blue-500/40 font-bold",
         };
       case "CUSTOMER":
         return {
           label: "KHÁCH HÀNG",
           className:
-            "bg-emerald-100 text-emerald-900 border border-emerald-300 font-bold",
+            "bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-bold",
         };
       default:
         return {
           label: "KHÁCH",
-          className: "bg-slate-100 text-slate-700 border border-slate-200 font-medium",
+          className:
+            "bg-neutral-800 text-neutral-400 border border-white/10 font-medium",
         };
     }
   };
@@ -141,8 +142,8 @@ export const Navbar = ({ activeTab, setActiveTab, user, onLogout }) => {
 
   return (
     <header className="sticky top-0 z-50 w-full pt-3 px-3 sm:px-6 lg:px-8">
-      {/* Floating Clean Light Island Container */}
-      <div className="max-w-7xl mx-auto rounded-2xl bg-white/90 backdrop-blur-xl border border-slate-200 shadow-sm transition-all duration-300">
+      {/* Floating Obsidian Glass Island */}
+      <div className="max-w-7xl mx-auto rounded-2xl bg-neutral-900/80 backdrop-blur-2xl border border-white/10 shadow-glass-md transition-all duration-300">
         <div className="px-4 sm:px-6 flex items-center justify-between h-16 sm:h-18">
           {/* Logo & Brand */}
           <div
@@ -164,21 +165,21 @@ export const Navbar = ({ activeTab, setActiveTab, user, onLogout }) => {
             </div>
             <div>
               <div className="flex items-center gap-1.5">
-                <span className="font-extrabold text-lg tracking-tight text-slate-900 leading-tight">
+                <span className="font-black text-lg tracking-tight text-white leading-tight">
                   Viettel
                 </span>
-                <span className="text-xs font-bold px-1.5 py-0.5 rounded bg-red-50 text-red-600 border border-red-200">
+                <span className="text-xs font-bold px-1.5 py-0.5 rounded bg-red-600/20 text-red-400 border border-red-500/30">
                   Delivery
                 </span>
               </div>
-              <span className="text-[10px] text-slate-500 block font-medium tracking-wider uppercase">
-                Hệ Thống Giao Nhận Thông Minh
+              <span className="text-[10px] text-neutral-400 block font-medium tracking-wider uppercase">
+                Logistics Intelligence
               </span>
             </div>
           </div>
 
-          {/* Desktop Navigation Tabs */}
-          <nav className="hidden md:flex items-center gap-1 bg-slate-100/80 p-1.5 rounded-xl border border-slate-200/60">
+          {/* Desktop Navigation Tabs with Framer Motion Sliding Pill */}
+          <nav className="hidden md:flex items-center gap-1 bg-black/40 p-1.5 rounded-xl border border-white/5">
             {visibleNavItems.map((item) => {
               const Icon = item.icon;
               const isActive = activeTab === item.id;
@@ -189,7 +190,7 @@ export const Navbar = ({ activeTab, setActiveTab, user, onLogout }) => {
                   className={`relative flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-200 cursor-pointer ${
                     isActive
                       ? "text-white"
-                      : "text-slate-600 hover:text-slate-900 hover:bg-white/60"
+                      : "text-neutral-400 hover:text-white hover:bg-white/5"
                   }`}
                 >
                   {isActive && (
@@ -201,7 +202,7 @@ export const Navbar = ({ activeTab, setActiveTab, user, onLogout }) => {
                   )}
                   <Icon
                     className={`w-4 h-4 ${
-                      isActive ? "text-white" : "text-slate-500"
+                      isActive ? "text-white" : "text-neutral-400"
                     }`}
                   />
                   <span>{item.label}</span>
@@ -217,12 +218,12 @@ export const Navbar = ({ activeTab, setActiveTab, user, onLogout }) => {
               <div className="relative">
                 <button
                   onClick={() => setShowNotifDropdown(!showNotifDropdown)}
-                  className="p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200/80 text-slate-600 hover:text-slate-900 transition-all cursor-pointer relative"
+                  className="p-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-neutral-300 hover:text-white transition-all cursor-pointer relative border border-white/10"
                   title="Thông báo"
                 >
                   <Bell className="w-4 h-4" />
                   {unreadCount > 0 && (
-                    <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-600 text-[10px] font-bold text-white shadow-sm animate-pulse">
+                    <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-600 text-[10px] font-bold text-white shadow-glow-red animate-pulse">
                       {unreadCount > 9 ? "9+" : unreadCount}
                     </span>
                   )}
@@ -236,16 +237,16 @@ export const Navbar = ({ activeTab, setActiveTab, user, onLogout }) => {
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       exit={{ opacity: 0, y: 10, scale: 0.95 }}
                       transition={{ duration: 0.15 }}
-                      className="absolute right-0 mt-3 w-80 sm:w-96 rounded-2xl bg-white border border-slate-200 shadow-xl overflow-hidden z-50 text-slate-800"
+                      className="absolute right-0 mt-3 w-80 sm:w-96 rounded-2xl bg-neutral-900 border border-white/15 shadow-glass-md overflow-hidden z-50 text-neutral-200 backdrop-blur-3xl"
                     >
-                      <div className="p-3.5 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
+                      <div className="p-3.5 bg-black/40 border-b border-white/10 flex items-center justify-between">
                         <div className="flex items-center gap-2">
-                          <Bell className="w-4 h-4 text-red-600" />
-                          <span className="font-bold text-xs uppercase tracking-wider text-slate-700">
+                          <Bell className="w-4 h-4 text-red-500" />
+                          <span className="font-bold text-xs uppercase tracking-wider text-white">
                             Thông Báo Hệ Thống
                           </span>
                           {unreadCount > 0 && (
-                            <span className="px-2 py-0.5 rounded-full bg-red-100 text-red-700 text-[10px] font-bold">
+                            <span className="px-2 py-0.5 rounded-full bg-red-600/30 text-red-300 text-[10px] font-bold border border-red-500/30">
                               {unreadCount} mới
                             </span>
                           )}
@@ -254,41 +255,41 @@ export const Navbar = ({ activeTab, setActiveTab, user, onLogout }) => {
                           {unreadCount > 0 && (
                             <button
                               onClick={handleMarkAllAsRead}
-                              className="text-[11px] text-blue-600 hover:text-blue-800 font-medium cursor-pointer"
+                              className="text-[11px] text-red-400 hover:text-red-300 font-medium cursor-pointer"
                             >
                               Đọc tất cả
                             </button>
                           )}
                           <button
                             onClick={() => setShowNotifDropdown(false)}
-                            className="text-slate-400 hover:text-slate-600 p-1 rounded-md cursor-pointer"
+                            className="text-neutral-400 hover:text-white p-1 rounded-md cursor-pointer"
                           >
                             <X className="w-4 h-4" />
                           </button>
                         </div>
                       </div>
 
-                      <div className="max-h-80 overflow-y-auto divide-y divide-slate-100">
+                      <div className="max-h-80 overflow-y-auto divide-y divide-white/5">
                         {notifications.length === 0 ? (
-                          <div className="p-8 text-center text-xs text-slate-400">
+                          <div className="p-8 text-center text-xs text-neutral-500">
                             Chưa có thông báo nào trong hộp thư
                           </div>
                         ) : (
                           notifications.slice(0, 15).map((n) => (
                             <div
                               key={n.id}
-                              className={`p-3.5 text-left transition hover:bg-slate-50 flex items-start justify-between gap-3 ${
-                                !n.isRead ? "bg-red-50/50 font-medium" : ""
+                              className={`p-3.5 text-left transition hover:bg-white/5 flex items-start justify-between gap-3 ${
+                                !n.isRead ? "bg-red-950/20 font-medium" : ""
                               }`}
                             >
                               <div className="flex-1 space-y-1">
-                                <p className="text-xs font-bold text-slate-900">
+                                <p className="text-xs font-bold text-white">
                                   {n.title}
                                 </p>
-                                <p className="text-xs text-slate-600 leading-relaxed">
+                                <p className="text-xs text-neutral-400 leading-relaxed">
                                   {n.message}
                                 </p>
-                                <span className="text-[10px] text-slate-400 block font-mono">
+                                <span className="text-[10px] text-neutral-500 block font-mono">
                                   {n.createdAt
                                     ? new Date(n.createdAt).toLocaleTimeString(
                                         "vi-VN"
@@ -300,7 +301,7 @@ export const Navbar = ({ activeTab, setActiveTab, user, onLogout }) => {
                                 <button
                                   onClick={(e) => handleMarkAsRead(n.id, e)}
                                   title="Đánh dấu đã đọc"
-                                  className="p-1 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-md transition cursor-pointer"
+                                  className="p-1 text-neutral-400 hover:text-emerald-400 hover:bg-emerald-500/10 rounded-md transition cursor-pointer"
                                 >
                                   <Check className="w-3.5 h-3.5" />
                                 </button>
@@ -317,13 +318,13 @@ export const Navbar = ({ activeTab, setActiveTab, user, onLogout }) => {
 
             {/* User Account / Auth Button */}
             {user ? (
-              <div className="flex items-center gap-2 bg-slate-100 p-1.5 sm:px-3 sm:py-1.5 rounded-xl border border-slate-200">
+              <div className="flex items-center gap-2 bg-white/5 p-1.5 sm:px-3 sm:py-1.5 rounded-xl border border-white/10">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-7 h-7 rounded-lg bg-red-600 text-white flex items-center justify-center font-bold text-xs shadow-sm">
+                  <div className="w-7 h-7 rounded-lg bg-red-600 text-white flex items-center justify-center font-bold text-xs shadow-glow-red">
                     {user.username?.charAt(0)?.toUpperCase() || "U"}
                   </div>
                   <div className="hidden sm:block text-left leading-tight">
-                    <p className="text-xs font-bold text-slate-900 truncate max-w-[110px]">
+                    <p className="text-xs font-bold text-white truncate max-w-[110px]">
                       {user.username}
                     </p>
                     <span
@@ -337,7 +338,7 @@ export const Navbar = ({ activeTab, setActiveTab, user, onLogout }) => {
                 <button
                   onClick={onLogout}
                   title="Đăng xuất"
-                  className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
+                  className="p-1.5 text-neutral-400 hover:text-rose-400 hover:bg-rose-500/10 rounded-lg transition-colors cursor-pointer"
                 >
                   <LogOut className="w-4 h-4" />
                 </button>
@@ -348,7 +349,7 @@ export const Navbar = ({ activeTab, setActiveTab, user, onLogout }) => {
                 className={`relative inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 cursor-pointer ${
                   activeTab === "login"
                     ? "bg-red-600 text-white shadow-glow-red"
-                    : "bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-200"
+                    : "bg-white/5 hover:bg-white/10 text-white border border-white/10"
                 }`}
               >
                 <LogIn className="w-4 h-4" />
@@ -359,7 +360,7 @@ export const Navbar = ({ activeTab, setActiveTab, user, onLogout }) => {
         </div>
 
         {/* Mobile Navigation bar */}
-        <div className="flex md:hidden overflow-x-auto px-4 py-2 border-t border-slate-100 gap-1 scrollbar-none">
+        <div className="flex md:hidden overflow-x-auto px-4 py-2 border-t border-white/5 gap-1 scrollbar-none">
           {visibleNavItems.map((item) => {
             const Icon = item.icon;
             const isActive = activeTab === item.id;
@@ -369,8 +370,8 @@ export const Navbar = ({ activeTab, setActiveTab, user, onLogout }) => {
                 onClick={() => setActiveTab(item.id)}
                 className={`flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors ${
                   isActive
-                    ? "bg-red-600 text-white shadow-sm"
-                    : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
+                    ? "bg-red-600 text-white shadow-glow-red"
+                    : "text-neutral-400 hover:text-white hover:bg-white/5"
                 }`}
               >
                 <Icon className="w-3.5 h-3.5" />
