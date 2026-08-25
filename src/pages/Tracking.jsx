@@ -20,12 +20,12 @@ import {
 import { motion } from "framer-motion";
 import { trackOrder } from "../api/deliveryApi";
 import { Particles } from "../components/magicui/Particles";
-import { BorderBeam } from "../components/magicui/BorderBeam";
-import { BentoGrid, BentoCard } from "../components/magicui/BentoGrid";
+import { BorderBeam } from "../components/BorderBeam";
+import { TiltCard } from "../components/TiltCard";
+import { SplitText } from "../components/SplitText";
 import { Marquee } from "../components/magicui/Marquee";
 import { Meteors } from "../components/magicui/Meteors";
 import { Ripple } from "../components/magicui/Ripple";
-import { ShimmerButton } from "../components/magicui/ShimmerButton";
 
 export const Tracking = () => {
   const [trackingNumber, setTrackingNumber] = useState("");
@@ -176,9 +176,9 @@ export const Tracking = () => {
   ];
 
   return (
-    <div className="space-y-16 sm:space-y-20">
+    <div className="space-y-16 sm:space-y-24">
       {/* ========================================================
-          1. HERO SECTION WITH PARTICLES & BORDER BEAM
+          1. HERO SECTION WITH SPLIT TEXT & BORDERBEAM CTA
           ======================================================== */}
       <section className="relative overflow-hidden rounded-3xl bg-neutral-900/60 border border-white/10 p-8 sm:p-14 lg:p-20 text-center backdrop-blur-3xl shadow-glass-md">
         {/* Living Canvas Particles */}
@@ -198,26 +198,23 @@ export const Tracking = () => {
           className="relative z-10 inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-white text-xs font-semibold backdrop-blur-md mb-6"
         >
           <Sparkles className="w-3.5 h-3.5 text-amber-400 animate-pulse" />
-          <span className="text-gradient-gold">Next-Gen Logistics Platform</span>
+          <span className="text-gradient-gold">Next-Gen Logistics Intelligence</span>
         </motion.div>
 
-        {/* Hero Title */}
-        <motion.h1
-          initial={{ opacity: 0, y: 15 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="relative z-10 text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white max-w-4xl mx-auto leading-tight"
-        >
-          Tra Cứu & Theo Dõi{" "}
-          <span className="bg-clip-text text-transparent bg-gradient-to-r from-red-500 via-rose-500 to-amber-400">
-            Hành Trình Bưu Gửi
-          </span>
-        </motion.h1>
+        {/* Hero Title with Split Text Animation */}
+        <div className="relative z-10 max-w-4xl mx-auto">
+          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white leading-tight">
+            <SplitText text="Tra Cứu & Theo Dõi" delay={0.1} />{" "}
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-red-500 via-rose-500 to-amber-400">
+              <SplitText text="Hành Trình Bưu Gửi" delay={0.3} />
+            </span>
+          </h1>
+        </div>
 
         <motion.p
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
+          transition={{ delay: 0.5 }}
           className="relative z-10 text-xs sm:text-sm text-neutral-400 mt-4 max-w-xl mx-auto font-normal leading-relaxed"
         >
           Nhập mã vận đơn để theo dõi lộ trình bưu kiện thời gian thực, đối soát COD tự động và thanh toán trực tuyến bảo mật.
@@ -227,7 +224,7 @@ export const Tracking = () => {
         <motion.div
           initial={{ opacity: 0, scale: 0.96 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.3 }}
+          transition={{ delay: 0.6 }}
           className="relative z-10 mt-10 max-w-2xl mx-auto"
         >
           <div className="relative rounded-2xl bg-neutral-950/90 p-2 shadow-glass-md border border-white/15 backdrop-blur-3xl overflow-hidden">
@@ -252,8 +249,9 @@ export const Tracking = () => {
               <button
                 type="submit"
                 disabled={loading}
-                className="px-7 py-3.5 rounded-xl font-bold text-sm text-white bg-gradient-to-r from-red-600 via-rose-600 to-red-700 hover:brightness-110 active:scale-[0.98] transition-all shadow-glow-red disabled:opacity-60 cursor-pointer flex items-center justify-center gap-2"
+                className="relative overflow-hidden px-7 py-3.5 rounded-xl font-bold text-sm text-white bg-gradient-to-r from-red-600 via-rose-600 to-red-700 hover:brightness-110 active:scale-[0.98] transition-all shadow-glow-red disabled:opacity-60 cursor-pointer flex items-center justify-center gap-2"
               >
+                <BorderBeam size={80} duration={4} colorFrom="#ffffff" colorTo="#ffd700" borderWidth={1} />
                 {loading ? (
                   <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
                 ) : (
@@ -467,7 +465,7 @@ export const Tracking = () => {
       )}
 
       {/* ========================================================
-          3. BENTO GRID FEATURES
+          3. BENTO GRID WITH 3D TILT CARDS
           ======================================================== */}
       <section className="space-y-8">
         <div className="text-center space-y-2">
@@ -482,44 +480,107 @@ export const Tracking = () => {
           </p>
         </div>
 
-        <BentoGrid className="max-w-6xl mx-auto">
-          <BentoCard
-            name="Mạng Lưới Toàn Quốc 63 Tỉnh Thành"
-            description="Độ phủ bưu cục 100% xã phường, kết nối đa phương thức đường bộ & hàng không với thời gian giao nhận cam kết."
-            Icon={Truck}
-            tag="Phủ Sóng 100%"
-            cta="Tìm bưu cục gần nhất"
-            className="md:col-span-2"
-          />
+        <div className="grid w-full grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
+          {/* Card 1: 2-column span with 3D tilt */}
+          <TiltCard className="md:col-span-2 flex flex-col justify-between">
+            <div className="flex items-center justify-between">
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-red-600/10 text-red-500 border border-red-500/20 shadow-glow-red">
+                <Truck className="h-6 w-6" />
+              </div>
+              <span className="rounded-full bg-white/5 border border-white/10 px-3 py-1 text-[11px] font-semibold text-neutral-300">
+                Phủ Sóng 100%
+              </span>
+            </div>
+            <div className="mt-8 space-y-2">
+              <h3 className="text-lg sm:text-xl font-bold text-white tracking-tight">
+                Mạng Lưới Toàn Quốc 63 Tỉnh Thành
+              </h3>
+              <p className="text-xs sm:text-sm text-neutral-400 leading-relaxed">
+                Độ phủ bưu cục 100% xã phường, kết nối đa phương thức đường bộ & hàng không với thời gian giao nhận cam kết.
+              </p>
+            </div>
+            <div className="mt-6 pt-4 border-t border-white/5 flex items-center text-xs font-semibold text-red-400">
+              <span>Tìm bưu cục gần nhất</span>
+              <span className="ml-1.5">→</span>
+            </div>
+          </TiltCard>
 
-          <BentoCard
-            name="Cổng VNPay Trực Tuyến"
-            description="Tích hợp thanh toán QR Code và thẻ nội địa Sandbox, hoàn tất thanh toán cước vận chỉ trong 3 giây."
-            Icon={CreditCard}
-            tag="Bảo Mật PCI-DSS"
-            cta="Trải nghiệm thanh toán"
-          />
+          {/* Card 2: 1-column span */}
+          <TiltCard className="flex flex-col justify-between" glareColor="rgba(56, 189, 248, 0.15)">
+            <div className="flex items-center justify-between">
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-600/10 text-blue-400 border border-blue-500/20 shadow-sm">
+                <CreditCard className="h-6 w-6" />
+              </div>
+              <span className="rounded-full bg-white/5 border border-white/10 px-3 py-1 text-[11px] font-semibold text-neutral-300">
+                Bảo Mật PCI-DSS
+              </span>
+            </div>
+            <div className="mt-8 space-y-2">
+              <h3 className="text-lg font-bold text-white tracking-tight">
+                Cổng VNPay Trực Tuyến
+              </h3>
+              <p className="text-xs text-neutral-400 leading-relaxed">
+                Tích hợp thanh toán QR Code và thẻ nội địa Sandbox, hoàn tất thanh toán cước vận chỉ trong 3 giây.
+              </p>
+            </div>
+            <div className="mt-6 pt-4 border-t border-white/5 flex items-center text-xs font-semibold text-blue-400">
+              <span>Trải nghiệm thanh toán</span>
+              <span className="ml-1.5">→</span>
+            </div>
+          </TiltCard>
 
-          <BentoCard
-            name="Thu Hộ COD & Đối Soát Nhanh"
-            description="Quản lý dòng tiền bán hàng minh bạch, miễn phí thu hộ cho các đơn nội thành, đối soát linh hoạt."
-            Icon={Zap}
-            tag="Tiện Ích 0đ"
-          />
+          {/* Card 3: 1-column span */}
+          <TiltCard className="flex flex-col justify-between" glareColor="rgba(234, 179, 8, 0.15)">
+            <div className="flex items-center justify-between">
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-600/10 text-amber-400 border border-amber-500/20 shadow-sm">
+                <Zap className="h-6 w-6" />
+              </div>
+              <span className="rounded-full bg-white/5 border border-white/10 px-3 py-1 text-[11px] font-semibold text-neutral-300">
+                Tiện Ích 0đ
+              </span>
+            </div>
+            <div className="mt-8 space-y-2">
+              <h3 className="text-lg font-bold text-white tracking-tight">
+                Thu Hộ COD & Đối Soát Nhanh
+              </h3>
+              <p className="text-xs text-neutral-400 leading-relaxed">
+                Quản lý dòng tiền bán hàng minh bạch, miễn phí thu hộ cho các đơn nội thành, đối soát linh hoạt.
+              </p>
+            </div>
+            <div className="mt-6 pt-4 border-t border-white/5 flex items-center text-xs font-semibold text-amber-400">
+              <span>Xem quy trình COD</span>
+              <span className="ml-1.5">→</span>
+            </div>
+          </TiltCard>
 
-          <BentoCard
-            name="Kho Voucher & Giảm Cước 50%"
-            description="Hệ thống tự động gợi ý mã giảm giá tối ưu nhất cho từng tuyến vận chuyển và kích thước kiện hàng."
-            Icon={Sparkles}
-            tag="Ưu Đãi Mỗi Ngày"
-            cta="Xem mã giảm giá"
-            className="md:col-span-2"
-          />
-        </BentoGrid>
+          {/* Card 4: 2-column span */}
+          <TiltCard className="md:col-span-2 flex flex-col justify-between" glareColor="rgba(212, 175, 55, 0.18)">
+            <div className="flex items-center justify-between">
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-tr from-amber-600/20 to-red-600/20 text-amber-300 border border-amber-500/30 shadow-glow-gold">
+                <Sparkles className="h-6 w-6" />
+              </div>
+              <span className="rounded-full bg-white/5 border border-white/10 px-3 py-1 text-[11px] font-semibold text-neutral-300">
+                Ưu Đãi Mỗi Ngày
+              </span>
+            </div>
+            <div className="mt-8 space-y-2">
+              <h3 className="text-lg sm:text-xl font-bold text-white tracking-tight">
+                Kho Voucher & Giảm Cước 50%
+              </h3>
+              <p className="text-xs sm:text-sm text-neutral-400 leading-relaxed">
+                Hệ thống tự động gợi ý mã giảm giá tối ưu nhất cho từng tuyến vận chuyển và kích thước kiện hàng.
+              </p>
+            </div>
+            <div className="mt-6 pt-4 border-t border-white/5 flex items-center text-xs font-semibold text-amber-400">
+              <span>Xem mã giảm giá</span>
+              <span className="ml-1.5">→</span>
+            </div>
+          </TiltCard>
+        </div>
       </section>
 
       {/* ========================================================
-          4. MARQUEE PARTNERS & REVIEWS
+          4. INFINITE MARQUEE WITH EDGE GRADIENT MASKS
           ======================================================== */}
       <section className="space-y-8 overflow-hidden">
         <div className="text-center space-y-2">
@@ -531,7 +592,7 @@ export const Tracking = () => {
           </h2>
         </div>
 
-        {/* Top Marquee */}
+        {/* Top Marquee with mask image gradient */}
         <div className="relative py-2 [mask-image:linear-gradient(to_right,transparent,black_15%,black_85%,transparent)]">
           <Marquee pauseOnHover className="[--duration:25s]">
             {partners.map((p, i) => (
@@ -549,7 +610,7 @@ export const Tracking = () => {
           </Marquee>
         </div>
 
-        {/* Bottom Marquee */}
+        {/* Bottom Marquee with reverse direction */}
         <div className="relative py-2 [mask-image:linear-gradient(to_right,transparent,black_15%,black_85%,transparent)]">
           <Marquee reverse pauseOnHover className="[--duration:35s]">
             {testimonials.map((t, i) => (
