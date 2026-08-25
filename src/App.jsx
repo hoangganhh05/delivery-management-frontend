@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import Lenis from "lenis";
 import { Navbar } from "./components/Navbar";
 import { Footer } from "./components/Footer";
 import Dashboard from "./pages/Dashboard";
@@ -7,13 +8,36 @@ import ShipmentManagement from "./pages/ShipmentManagement";
 import Tracking from "./pages/Tracking";
 import Login from "./pages/Login";
 import { CursorGlow } from "./components/CursorGlow";
-import { useLenis } from "./hooks/useLenis";
 import { CheckCircle2, AlertCircle, X, ShieldAlert } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 function App() {
-  // 1. Initialize Lenis Smooth Scroll inertia
-  useLenis();
+  // 1. Root-level Lenis Smooth Scroll Setup with Inertia
+  useEffect(() => {
+    const lenis = new Lenis({
+      duration: 1.2,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      orientation: "vertical",
+      gestureOrientation: "vertical",
+      smoothWheel: true,
+      wheelMultiplier: 1.0,
+      touchMultiplier: 1.5,
+      infinite: false,
+    });
+
+    let animationFrameId;
+    function raf(time) {
+      lenis.raf(time);
+      animationFrameId = requestAnimationFrame(raf);
+    }
+
+    animationFrameId = requestAnimationFrame(raf);
+
+    return () => {
+      cancelAnimationFrame(animationFrameId);
+      lenis.destroy();
+    };
+  }, []);
 
   // 2. Authentication State
   const [user, setUser] = useState(() => {
@@ -159,16 +183,16 @@ function App() {
 
   return (
     <div className="min-h-screen bg-neutral-950 text-neutral-100 flex flex-col font-sans relative selection:bg-red-600/30 selection:text-red-200">
-      {/* Living Cursor Glow Spotlight */}
+      {/* 1. Interactive Cursor Glow Spotlight (Pointer Tracking) */}
       <CursorGlow />
 
-      {/* Background Ambient Glows */}
+      {/* 2. Living Ambient Background Glows */}
       <div className="fixed inset-0 pointer-events-none -z-20 overflow-hidden">
         <div className="absolute top-[-10%] left-[20%] w-[600px] h-[600px] bg-red-600/10 rounded-full blur-[140px]" />
         <div className="absolute bottom-[10%] right-[10%] w-[500px] h-[500px] bg-amber-500/5 rounded-full blur-[160px]" />
       </div>
 
-      {/* Floating Obsidian Navbar */}
+      {/* 3. Floating Glass Navbar */}
       <Navbar
         activeTab={activeTab}
         setActiveTab={setActiveTab}
@@ -176,7 +200,7 @@ function App() {
         onLogout={handleLogout}
       />
 
-      {/* VNPay Payment Notice Banner */}
+      {/* 4. VNPay Payment Notice Banner */}
       <AnimatePresence>
         {paymentNotice && (
           <motion.div
@@ -213,7 +237,7 @@ function App() {
         )}
       </AnimatePresence>
 
-      {/* Main Content Body with Framer Motion Page Transition */}
+      {/* 5. Main Content Body with Framer Motion Page Transition */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
         <AnimatePresence mode="wait">
           <motion.div
@@ -228,7 +252,7 @@ function App() {
         </AnimatePresence>
       </main>
 
-      {/* Obsidian Luxury Footer */}
+      {/* 6. Luxury Footer */}
       <Footer />
     </div>
   );
