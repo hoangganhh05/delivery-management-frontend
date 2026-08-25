@@ -1,9 +1,16 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
+  darkMode: ["class"],
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
     extend: {
       colors: {
+        obsidian: {
+          950: "#09090b",
+          900: "#121216",
+          850: "#18181f",
+          800: "#22222b",
+        },
         viettel: {
           50: "#fff1f2",
           100: "#ffe4e6",
@@ -16,17 +23,28 @@ module.exports = {
           800: "#9f1239",
           900: "#881337",
         },
+        luxury: {
+          gold: "#d4af37",
+          "gold-light": "#fef08a",
+          silver: "#e2e8f0",
+          "silver-dark": "#94a3b8",
+        },
       },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
+        "gradient-silver": "linear-gradient(135deg, #ffffff 0%, #cbd5e1 50%, #64748b 100%)",
+        "gradient-gold": "linear-gradient(135deg, #fef08a 0%, #eab308 50%, #854d0e 100%)",
         "gradient-viettel": "linear-gradient(135deg, #ee0033 0%, #b30026 100%)",
-        "gradient-light-card": "linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 250, 252, 0.85) 100%)",
+        "gradient-dark-glass": "linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 100%)",
       },
       boxShadow: {
-        "glow-red": "0 4px 20px -2px rgba(238, 0, 51, 0.25)",
-        "glow-red-lg": "0 8px 30px -4px rgba(238, 0, 51, 0.35)",
-        "light-card": "0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05)",
-        "light-card-hover": "0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04)",
+        "glass-sm": "0 8px 32px 0 rgba(0, 0, 0, 0.45)",
+        "glass-md": "0 16px 48px 0 rgba(0, 0, 0, 0.65)",
+        "glow-red": "0 0 25px -3px rgba(238, 0, 51, 0.5)",
+        "glow-red-lg": "0 0 40px -4px rgba(238, 0, 51, 0.65)",
+        "glow-gold": "0 0 25px -3px rgba(212, 175, 55, 0.45)",
+        "glow-silver": "0 0 25px -3px rgba(255, 255, 255, 0.25)",
+        "inner-light": "inset 0 1px 1px 0 rgba(255, 255, 255, 0.15)",
       },
       animation: {
         "border-beam": "border-beam calc(var(--duration, 8s)) infinite linear",
@@ -67,7 +85,7 @@ module.exports = {
         },
         "pulse-slow": {
           "0%, 100%": { opacity: "1" },
-          "50%": { opacity: "0.4" },
+          "50%": { opacity: "0.35" },
         },
         ripple: {
           "0%, 100%": {
