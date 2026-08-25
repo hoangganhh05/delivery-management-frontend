@@ -4,9 +4,7 @@
 
 @layer base {
   :root {
-    color-scheme: dark;
-    --background: 0 0% 3.9%;
-    --foreground: 0 0% 98%;
+    color-scheme: light;
   }
 
   html {
@@ -14,92 +12,67 @@
   }
 
   body {
-    @apply bg-neutral-950 text-neutral-100 antialiased selection:bg-red-600/30 selection:text-red-200 min-h-screen overflow-x-hidden;
+    @apply bg-slate-50 text-slate-900 antialiased selection:bg-red-600/20 selection:text-red-700 min-h-screen overflow-x-hidden;
     background-image: 
-      radial-gradient(ellipse 80% 80% at 50% -20%, rgba(238, 0, 51, 0.12), rgba(255, 255, 255, 0)),
-      radial-gradient(ellipse 50% 50% at 90% 80%, rgba(212, 175, 55, 0.05), rgba(255, 255, 255, 0));
+      radial-gradient(ellipse 80% 50% at 50% -10%, rgba(238, 0, 51, 0.05), rgba(255, 255, 255, 0)),
+      radial-gradient(ellipse 60% 40% at 90% 90%, rgba(244, 63, 94, 0.03), rgba(255, 255, 255, 0));
   }
 
-  /* Custom Luxury Dark Scrollbar */
+  /* Form Elements Reset & Defaults */
+  input, select, textarea {
+    @apply bg-white text-slate-900 border-slate-300 placeholder-slate-400;
+  }
+
+  /* Custom Clean Light Scrollbar */
   ::-webkit-scrollbar {
-    width: 7px;
-    height: 7px;
+    width: 6px;
+    height: 6px;
   }
 
   ::-webkit-scrollbar-track {
-    background: #09090b;
+    background: #f1f5f9;
   }
 
   ::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.15);
+    background: #cbd5e1;
     border-radius: 9999px;
-    border: 2px solid #09090b;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    background: rgba(238, 0, 51, 0.6);
+    background: #ee0033;
   }
 }
 
 @layer utilities {
   /* ========================================================
-     GLASSMORPHISM & LUXURY CARDS
+     CLEAN LIGHT GLASS & CARDS
      ======================================================== */
-  .glass-card {
-    @apply bg-neutral-900/60 backdrop-blur-xl border border-white/10 shadow-glass-sm rounded-2xl transition-all duration-300;
+  .glass-card-light {
+    @apply bg-white/90 backdrop-blur-xl border border-slate-200/80 shadow-light-card rounded-2xl transition-all duration-300;
   }
 
-  .glass-card-hover {
-    @apply glass-card hover:bg-neutral-900/80 hover:border-white/20 hover:shadow-glass-md hover:-translate-y-0.5;
+  .glass-card-light-hover {
+    @apply glass-card-light hover:bg-white hover:border-red-200 hover:shadow-light-card-hover hover:-translate-y-0.5;
   }
 
-  .glass-panel {
-    @apply bg-black/75 backdrop-blur-2xl border border-white/10 shadow-glass-md;
-  }
-
-  .glass-input {
-    @apply bg-neutral-950/70 backdrop-blur-md border border-white/10 text-white placeholder-neutral-500 rounded-xl px-4 py-2.5 text-sm transition-all duration-200 outline-none focus:border-red-500/80 focus:ring-2 focus:ring-red-500/20 focus:bg-neutral-900/90;
+  .glass-input-light {
+    @apply bg-white border border-slate-300 text-slate-900 placeholder-slate-400 rounded-xl px-4 py-2.5 text-sm transition-all duration-200 outline-none focus:border-red-500 focus:ring-2 focus:ring-red-500/20 focus:bg-white;
   }
 
   .glass-button-primary {
-    @apply relative inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm text-white bg-gradient-to-r from-red-600 via-rose-600 to-red-700 shadow-glow-red hover:shadow-red-500/50 hover:brightness-110 active:scale-[0.98] transition-all duration-200 disabled:opacity-50 cursor-pointer overflow-hidden;
+    @apply relative inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm text-white bg-gradient-to-r from-red-600 via-rose-600 to-red-700 shadow-glow-red hover:shadow-glow-red-lg hover:brightness-105 active:scale-[0.98] transition-all duration-200 disabled:opacity-50 cursor-pointer overflow-hidden;
   }
 
   .glass-button-secondary {
-    @apply inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl font-medium text-sm text-neutral-300 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 hover:text-white backdrop-blur-md transition-all duration-200 cursor-pointer;
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl font-medium text-sm text-slate-700 bg-white hover:bg-slate-50 border border-slate-300 hover:border-slate-400 shadow-xs transition-all duration-200 cursor-pointer;
   }
 
-  /* ========================================================
-     TEXT GRADIENTS (SILVER & GOLD & BRAND)
-     ======================================================== */
-  .text-gradient-silver {
-    @apply bg-clip-text text-transparent bg-gradient-silver font-bold tracking-tight;
+  /* Text Gradients */
+  .text-gradient-red {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-red-600 via-rose-600 to-red-700 font-extrabold tracking-tight;
   }
 
-  .text-gradient-gold {
-    @apply bg-clip-text text-transparent bg-gradient-gold font-bold tracking-tight;
-  }
-
-  .text-gradient-rose {
-    @apply bg-clip-text text-transparent bg-gradient-rose-gold font-bold tracking-tight;
-  }
-
-  .text-gradient-viettel {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-red-400 via-rose-500 to-red-600 font-bold tracking-tight;
-  }
-
-  /* ========================================================
-     AMBIENT GLOW ORBS & LIGHT SHIELD
-     ======================================================== */
-  .ambient-glow-red {
-    background: radial-gradient(circle, rgba(238, 0, 51, 0.25) 0%, rgba(238, 0, 51, 0) 70%);
-  }
-
-  .ambient-glow-gold {
-    background: radial-gradient(circle, rgba(212, 175, 55, 0.20) 0%, rgba(212, 175, 55, 0) 70%);
-  }
-
-  .shimmer-mask {
-    mask-image: linear-gradient(to right, transparent, black, transparent);
+  .text-gradient-dark {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-slate-900 via-slate-800 to-slate-700 font-extrabold tracking-tight;
   }
 }
