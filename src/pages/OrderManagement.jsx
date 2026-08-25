@@ -20,7 +20,7 @@ import {
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { createOrder, calculateVoucher, createPayment } from "../api/deliveryApi";
-import { BorderBeam } from "../components/magicui/BorderBeam";
+import { BorderBeam } from "../components/BorderBeam";
 
 export const OrderManagement = () => {
   // Order Form State
@@ -262,21 +262,21 @@ export const OrderManagement = () => {
     <div className="space-y-8">
       {/* Page Heading */}
       <div>
-        <h1 className="text-2xl sm:text-3xl font-black text-white flex items-center gap-3">
-          <PackagePlus className="w-7 h-7 text-red-500" />
+        <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white flex items-center gap-3">
+          <PackagePlus className="w-7 h-7 text-red-600 dark:text-red-500" />
           Tạo & Quản Lý Đơn Hàng
         </h1>
-        <p className="text-xs sm:text-sm text-neutral-400 mt-1">
+        <p className="text-xs sm:text-sm text-slate-500 dark:text-neutral-400 mt-1">
           Khởi tạo vận đơn mới, tích hợp cổng thanh toán VNPay trực tuyến và tính toán ưu đãi voucher
         </p>
       </div>
 
       {paymentError && (
-        <div className="p-4 rounded-2xl bg-rose-950/50 border border-rose-500/30 text-rose-200 flex items-start gap-3 backdrop-blur-md">
-          <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5 text-rose-400" />
+        <div className="p-4 rounded-2xl bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-500/30 text-rose-800 dark:text-rose-200 flex items-start gap-3 backdrop-blur-md">
+          <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5 text-rose-600 dark:text-rose-400" />
           <div className="flex-1">
             <p className="font-bold text-sm">Lỗi thanh toán VNPay</p>
-            <p className="text-xs text-rose-300 mt-0.5">{paymentError}</p>
+            <p className="text-xs text-rose-700 dark:text-rose-300 mt-0.5">{paymentError}</p>
           </div>
         </div>
       )}
@@ -284,27 +284,27 @@ export const OrderManagement = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
         {/* SECTION 1: CREATE ORDER FORM */}
         <div className="lg:col-span-2 space-y-6">
-          <div className="relative rounded-3xl bg-neutral-900/80 border border-white/10 p-6 sm:p-8 backdrop-blur-2xl shadow-glass-md">
-            <div className="flex items-center justify-between pb-4 border-b border-white/10 mb-6">
-              <h2 className="text-lg font-bold text-white flex items-center gap-2">
+          <div className="relative rounded-3xl bg-white dark:bg-neutral-900/80 border border-slate-200 dark:border-white/10 p-6 sm:p-8 backdrop-blur-2xl shadow-sm dark:shadow-glass-md">
+            <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-white/10 mb-6">
+              <h2 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
                 <span className="w-2.5 h-6 bg-red-600 rounded-full inline-block" />
                 Tạo Vận Đơn Mới
               </h2>
-              <span className="text-xs font-semibold px-3 py-1 rounded-full bg-red-600/20 text-red-400 border border-red-500/30">
+              <span className="text-xs font-semibold px-3 py-1 rounded-full bg-red-100 dark:bg-red-600/20 text-red-700 dark:text-red-400 border border-red-200 dark:border-red-500/30">
                 Bắt buộc nhập đủ
               </span>
             </div>
 
             {/* Created Success Alert with VNPay button */}
             {orderResult && (
-              <div className="mb-6 p-5 rounded-2xl bg-emerald-950/60 border border-emerald-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-emerald-200 backdrop-blur-md">
+              <div className="mb-6 p-5 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-emerald-900 dark:text-emerald-200 backdrop-blur-md">
                 <div className="flex items-start gap-3">
-                  <CheckCircle2 className="w-6 h-6 flex-shrink-0 mt-0.5 text-emerald-400" />
+                  <CheckCircle2 className="w-6 h-6 flex-shrink-0 mt-0.5 text-emerald-600 dark:text-emerald-400" />
                   <div>
-                    <p className="font-bold text-white text-sm">Tạo đơn hàng thành công!</p>
-                    <p className="text-xs mt-1 text-emerald-300">
+                    <p className="font-bold text-slate-900 dark:text-white text-sm">Tạo đơn hàng thành công!</p>
+                    <p className="text-xs mt-1 text-emerald-700 dark:text-emerald-300">
                       Mã vận đơn (Tra cứu):{" "}
-                      <span className="font-mono font-bold bg-emerald-900/80 text-emerald-200 px-2.5 py-1 rounded-lg border border-emerald-500/40 select-all">
+                      <span className="font-mono font-bold bg-emerald-100 dark:bg-emerald-900/80 text-emerald-900 dark:text-emerald-200 px-2.5 py-1 rounded-lg border border-emerald-300 dark:border-emerald-500/40 select-all">
                         {orderResult.trackingNumber}
                       </span>
                     </p>
@@ -318,7 +318,7 @@ export const OrderManagement = () => {
                       navigator.clipboard.writeText(orderResult.trackingNumber);
                       alert("Đã sao chép mã vận đơn!");
                     }}
-                    className="px-3 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold transition cursor-pointer"
+                    className="px-3 py-2 rounded-xl bg-emerald-100 hover:bg-emerald-200 dark:bg-white/10 dark:hover:bg-white/20 text-emerald-900 dark:text-white text-xs font-bold transition cursor-pointer"
                   >
                     Sao chép mã 📋
                   </button>
@@ -340,11 +340,11 @@ export const OrderManagement = () => {
             )}
 
             {orderError && (
-              <div className="mb-6 p-4 rounded-2xl bg-rose-950/50 border border-rose-500/30 text-rose-200 flex items-start gap-3">
-                <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5 text-rose-400" />
+              <div className="mb-6 p-4 rounded-2xl bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-500/30 text-rose-800 dark:text-rose-200 flex items-start gap-3">
+                <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5 text-rose-600 dark:text-rose-400" />
                 <div>
                   <p className="font-bold text-sm">Lỗi tạo đơn hàng</p>
-                  <p className="text-xs text-rose-300 mt-1">{orderError}</p>
+                  <p className="text-xs text-rose-700 dark:text-rose-300 mt-1">{orderError}</p>
                 </div>
               </div>
             )}
@@ -353,12 +353,12 @@ export const OrderManagement = () => {
               {/* Người gửi & Người nhận */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                 {/* Người gửi */}
-                <div className="p-5 rounded-2xl bg-white/[0.03] border border-white/5 space-y-4">
-                  <h3 className="text-xs font-bold text-red-400 uppercase tracking-wider flex items-center gap-1.5">
+                <div className="p-5 rounded-2xl bg-slate-50 dark:bg-white/[0.03] border border-slate-200/80 dark:border-white/5 space-y-4">
+                  <h3 className="text-xs font-bold text-red-600 dark:text-red-400 uppercase tracking-wider flex items-center gap-1.5">
                     <User className="w-3.5 h-3.5" /> 1. Thông Tin Người Gửi
                   </h3>
                   <div>
-                    <label className="block text-xs font-semibold text-neutral-300 mb-1.5">Họ tên người gửi *</label>
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-neutral-300 mb-1.5">Họ tên người gửi *</label>
                     <input
                       type="text"
                       name="senderName"
@@ -366,11 +366,11 @@ export const OrderManagement = () => {
                       value={orderForm.senderName}
                       onChange={handleOrderChange}
                       placeholder="Nguyễn Văn A"
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-neutral-950/80 border border-white/10 text-white placeholder-neutral-500 focus:border-red-500 focus:ring-2 focus:ring-red-500/20 text-sm outline-none"
+                      className="w-full"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-semibold text-neutral-300 mb-1.5">Số điện thoại *</label>
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-neutral-300 mb-1.5">Số điện thoại *</label>
                     <input
                       type="tel"
                       name="senderPhone"
@@ -378,11 +378,11 @@ export const OrderManagement = () => {
                       value={orderForm.senderPhone}
                       onChange={handleOrderChange}
                       placeholder="0987654321"
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-neutral-950/80 border border-white/10 text-white placeholder-neutral-500 focus:border-red-500 focus:ring-2 focus:ring-red-500/20 text-sm outline-none"
+                      className="w-full"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-semibold text-neutral-300 mb-1.5">Địa chỉ lấy hàng *</label>
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-neutral-300 mb-1.5">Địa chỉ lấy hàng *</label>
                     <textarea
                       rows="2"
                       name="senderAddress"
@@ -390,18 +390,18 @@ export const OrderManagement = () => {
                       value={orderForm.senderAddress}
                       onChange={handleOrderChange}
                       placeholder="Số 1 Giang Văn Minh, Ba Đình, Hà Nội"
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-neutral-950/80 border border-white/10 text-white placeholder-neutral-500 focus:border-red-500 focus:ring-2 focus:ring-red-500/20 text-sm outline-none resize-none"
+                      className="w-full resize-none"
                     />
                   </div>
                 </div>
 
                 {/* Người nhận */}
-                <div className="p-5 rounded-2xl bg-white/[0.03] border border-white/5 space-y-4">
-                  <h3 className="text-xs font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-1.5">
+                <div className="p-5 rounded-2xl bg-slate-50 dark:bg-white/[0.03] border border-slate-200/80 dark:border-white/5 space-y-4">
+                  <h3 className="text-xs font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider flex items-center gap-1.5">
                     <User className="w-3.5 h-3.5" /> 2. Thông Tin Người Nhận
                   </h3>
                   <div>
-                    <label className="block text-xs font-semibold text-neutral-300 mb-1.5">Họ tên người nhận *</label>
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-neutral-300 mb-1.5">Họ tên người nhận *</label>
                     <input
                       type="text"
                       name="receiverName"
@@ -409,11 +409,11 @@ export const OrderManagement = () => {
                       value={orderForm.receiverName}
                       onChange={handleOrderChange}
                       placeholder="Trần Thị B"
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-neutral-950/80 border border-white/10 text-white placeholder-neutral-500 focus:border-red-500 focus:ring-2 focus:ring-red-500/20 text-sm outline-none"
+                      className="w-full"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-semibold text-neutral-300 mb-1.5">Số điện thoại *</label>
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-neutral-300 mb-1.5">Số điện thoại *</label>
                     <input
                       type="tel"
                       name="receiverPhone"
@@ -421,11 +421,11 @@ export const OrderManagement = () => {
                       value={orderForm.receiverPhone}
                       onChange={handleOrderChange}
                       placeholder="0912345678"
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-neutral-950/80 border border-white/10 text-white placeholder-neutral-500 focus:border-red-500 focus:ring-2 focus:ring-red-500/20 text-sm outline-none"
+                      className="w-full"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-semibold text-neutral-300 mb-1.5">Địa chỉ giao hàng *</label>
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-neutral-300 mb-1.5">Địa chỉ giao hàng *</label>
                     <textarea
                       rows="2"
                       name="receiverAddress"
@@ -433,7 +433,7 @@ export const OrderManagement = () => {
                       value={orderForm.receiverAddress}
                       onChange={handleOrderChange}
                       placeholder="Số 285 Cách Mạng Tháng 8, Quận 10, TP.HCM"
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-neutral-950/80 border border-white/10 text-white placeholder-neutral-500 focus:border-red-500 focus:ring-2 focus:ring-red-500/20 text-sm outline-none resize-none"
+                      className="w-full resize-none"
                     />
                   </div>
                 </div>
@@ -442,7 +442,7 @@ export const OrderManagement = () => {
               {/* Thông số kiện hàng & Cước phí */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold text-neutral-300 mb-1.5">Khối lượng (kg) *</label>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-neutral-300 mb-1.5">Khối lượng (kg) *</label>
                   <input
                     type="number"
                     step="0.1"
@@ -451,36 +451,36 @@ export const OrderManagement = () => {
                     required
                     value={orderForm.weight}
                     onChange={handleOrderChange}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-neutral-950/80 border border-white/10 text-white placeholder-neutral-500 focus:border-red-500 text-sm outline-none"
+                    className="w-full"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-neutral-300 mb-1.5">Cước vận chuyển (VNĐ) *</label>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-neutral-300 mb-1.5">Cước vận chuyển (VNĐ) *</label>
                   <input
                     type="number"
                     name="shippingFee"
                     required
                     value={orderForm.shippingFee}
                     onChange={handleOrderChange}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-neutral-950/80 border border-white/10 text-white placeholder-neutral-500 focus:border-red-500 text-sm outline-none"
+                    className="w-full"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-neutral-300 mb-1.5">Tiền thu hộ COD (VNĐ)</label>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-neutral-300 mb-1.5">Tiền thu hộ COD (VNĐ)</label>
                   <input
                     type="number"
                     name="codAmount"
                     value={orderForm.codAmount}
                     onChange={handleOrderChange}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-neutral-950/80 border border-white/10 text-white placeholder-neutral-500 focus:border-red-500 text-sm outline-none"
+                    className="w-full"
                   />
                 </div>
               </div>
 
               {/* Danh sách mặt hàng */}
-              <div className="p-5 rounded-2xl bg-white/[0.03] border border-white/5 space-y-4">
+              <div className="p-5 rounded-2xl bg-slate-50 dark:bg-white/[0.03] border border-slate-200/80 dark:border-white/5 space-y-4">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-xs font-bold text-amber-400 uppercase tracking-wider flex items-center gap-1.5">
+                  <h3 className="text-xs font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider flex items-center gap-1.5">
                     <Layers className="w-3.5 h-3.5" /> 3. Danh Sách Mặt Hàng Trong Kiện
                   </h3>
                   <button
@@ -494,47 +494,47 @@ export const OrderManagement = () => {
 
                 <div className="space-y-3">
                   {orderForm.items.map((item, index) => (
-                    <div key={index} className="grid grid-cols-1 sm:grid-cols-12 gap-2 items-center bg-black/40 p-3 rounded-xl border border-white/5">
+                    <div key={index} className="grid grid-cols-1 sm:grid-cols-12 gap-2 items-center bg-white dark:bg-black/40 p-3 rounded-xl border border-slate-200 dark:border-white/5 shadow-xs">
                       <div className="sm:col-span-4">
-                        <label className="block text-[10px] text-neutral-400 mb-1">Tên hàng</label>
+                        <label className="block text-[10px] text-slate-500 dark:text-neutral-400 mb-1">Tên hàng</label>
                         <input
                           type="text"
                           required
                           value={item.itemName}
                           onChange={(e) => handleItemChange(index, "itemName", e.target.value)}
                           placeholder="Quần áo thời trang"
-                          className="w-full px-3 py-2 rounded-lg bg-neutral-950 border border-white/10 text-white text-xs outline-none focus:border-red-500"
+                          className="w-full text-xs"
                         />
                       </div>
                       <div className="sm:col-span-2">
-                        <label className="block text-[10px] text-neutral-400 mb-1">SL</label>
+                        <label className="block text-[10px] text-slate-500 dark:text-neutral-400 mb-1">SL</label>
                         <input
                           type="number"
                           min="1"
                           required
                           value={item.quantity}
                           onChange={(e) => handleItemChange(index, "quantity", e.target.value)}
-                          className="w-full px-3 py-2 rounded-lg bg-neutral-950 border border-white/10 text-white text-xs outline-none focus:border-red-500"
+                          className="w-full text-xs"
                         />
                       </div>
                       <div className="sm:col-span-2">
-                        <label className="block text-[10px] text-neutral-400 mb-1">Cân nặng (g)</label>
+                        <label className="block text-[10px] text-slate-500 dark:text-neutral-400 mb-1">Cân nặng (g)</label>
                         <input
                           type="number"
                           min="10"
                           value={item.weightGram}
                           onChange={(e) => handleItemChange(index, "weightGram", e.target.value)}
-                          className="w-full px-3 py-2 rounded-lg bg-neutral-950 border border-white/10 text-white text-xs outline-none focus:border-red-500"
+                          className="w-full text-xs"
                         />
                       </div>
                       <div className="sm:col-span-3">
-                        <label className="block text-[10px] text-neutral-400 mb-1">Giá trị khai báo (VNĐ)</label>
+                        <label className="block text-[10px] text-slate-500 dark:text-neutral-400 mb-1">Giá trị khai báo (VNĐ)</label>
                         <input
                           type="number"
                           min="0"
                           value={item.declaredValue}
                           onChange={(e) => handleItemChange(index, "declaredValue", e.target.value)}
-                          className="w-full px-3 py-2 rounded-lg bg-neutral-950 border border-white/10 text-white text-xs outline-none focus:border-red-500"
+                          className="w-full text-xs"
                         />
                       </div>
                       <div className="sm:col-span-1 flex justify-center pt-4 sm:pt-0">
@@ -542,7 +542,7 @@ export const OrderManagement = () => {
                           <button
                             type="button"
                             onClick={() => removeItem(index)}
-                            className="p-2 text-neutral-400 hover:text-rose-400 hover:bg-rose-500/10 rounded-lg transition cursor-pointer"
+                            className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:text-rose-400 dark:hover:bg-rose-500/10 rounded-lg transition cursor-pointer"
                           >
                             <Trash2 className="w-4 h-4" />
                           </button>
@@ -554,12 +554,12 @@ export const OrderManagement = () => {
               </div>
 
               {/* Voucher Input Box */}
-              <div className="p-4 rounded-2xl bg-amber-500/5 border border-amber-500/20 flex flex-col sm:flex-row items-center justify-between gap-3">
-                <div className="flex items-center gap-3 text-amber-300">
-                  <Ticket className="w-5 h-5 text-amber-400" />
+              <div className="p-4 rounded-2xl bg-amber-50 dark:bg-amber-500/5 border border-amber-200 dark:border-amber-500/20 flex flex-col sm:flex-row items-center justify-between gap-3">
+                <div className="flex items-center gap-3 text-amber-800 dark:text-amber-300">
+                  <Ticket className="w-5 h-5 text-amber-600 dark:text-amber-400" />
                   <div>
-                    <p className="text-xs font-bold text-amber-200">Mã Voucher Cho Đơn Hàng (Tùy chọn)</p>
-                    <p className="text-[11px] text-neutral-400">Nhập mã ưu đãi giảm cước giao hàng (VD: VIETTEL50, FREESHIP)</p>
+                    <p className="text-xs font-bold text-amber-900 dark:text-amber-200">Mã Voucher Cho Đơn Hàng (Tùy chọn)</p>
+                    <p className="text-[11px] text-slate-500 dark:text-neutral-400">Nhập mã ưu đãi giảm cước giao hàng (VD: VIETTEL50, FREESHIP)</p>
                   </div>
                 </div>
                 <input
@@ -568,7 +568,7 @@ export const OrderManagement = () => {
                   value={orderForm.voucherCode}
                   onChange={handleOrderChange}
                   placeholder="MÃ VOUCHER (VIETTEL50)"
-                  className="w-full sm:w-60 px-3.5 py-2 rounded-xl bg-neutral-950 border border-amber-500/30 text-amber-300 uppercase font-mono font-bold text-xs outline-none focus:border-amber-400"
+                  className="w-full sm:w-60 px-3.5 py-2 uppercase font-mono font-bold text-xs"
                 />
               </div>
 
@@ -593,18 +593,18 @@ export const OrderManagement = () => {
         {/* SECTION 2: VOUCHER & RECENT ORDERS */}
         <div className="space-y-6">
           {/* Voucher Calculator Card */}
-          <div className="rounded-3xl bg-neutral-900/80 border border-white/10 p-6 backdrop-blur-2xl shadow-glass-md space-y-4">
-            <div className="flex items-center gap-2 text-white pb-3 border-b border-white/10">
-              <Ticket className="w-5 h-5 text-amber-400" />
+          <div className="rounded-3xl bg-white dark:bg-neutral-900/80 border border-slate-200 dark:border-white/10 p-6 backdrop-blur-2xl shadow-sm dark:shadow-glass-md space-y-4">
+            <div className="flex items-center gap-2 text-slate-900 dark:text-white pb-3 border-b border-slate-100 dark:border-white/10">
+              <Ticket className="w-5 h-5 text-amber-600 dark:text-amber-400" />
               <h2 className="text-base font-bold">Áp Dụng Voucher</h2>
             </div>
 
             {voucherResult && (
-              <div className="p-3.5 rounded-xl bg-emerald-950/60 border border-emerald-500/30 text-xs text-emerald-200 space-y-1">
-                <p className="font-bold text-white">Mã hợp lệ!</p>
+              <div className="p-3.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-500/30 text-xs text-emerald-900 dark:text-emerald-200 space-y-1">
+                <p className="font-bold text-slate-900 dark:text-white">Mã hợp lệ!</p>
                 <p>
                   Giảm giá:{" "}
-                  <span className="font-bold text-amber-300">
+                  <span className="font-bold text-red-600 dark:text-amber-300">
                     {formatVND(
                       typeof voucherResult === "number"
                         ? voucherResult
@@ -616,46 +616,46 @@ export const OrderManagement = () => {
             )}
 
             {voucherError && (
-              <div className="p-3 rounded-xl bg-rose-950/50 border border-rose-500/30 text-xs text-rose-300">
+              <div className="p-3 rounded-xl bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-500/30 text-xs text-rose-800 dark:text-rose-300">
                 {voucherError}
               </div>
             )}
 
             <form onSubmit={handleVoucherSubmit} className="space-y-3">
               <div>
-                <label className="block text-[11px] font-semibold text-neutral-300 mb-1">Mã Voucher *</label>
+                <label className="block text-[11px] font-semibold text-slate-700 dark:text-neutral-300 mb-1">Mã Voucher *</label>
                 <input
                   type="text"
                   required
                   value={voucherForm.voucherCode}
                   onChange={(e) => setVoucherForm({ ...voucherForm, voucherCode: e.target.value })}
                   placeholder="VIETTEL50"
-                  className="w-full px-3 py-2 rounded-xl bg-neutral-950 border border-white/10 text-amber-300 font-mono font-bold text-xs uppercase outline-none focus:border-amber-400"
+                  className="w-full uppercase font-mono font-bold text-xs"
                 />
               </div>
 
               <div>
-                <label className="block text-[11px] font-semibold text-neutral-300 mb-1">Giá trị đơn hàng (VNĐ) *</label>
+                <label className="block text-[11px] font-semibold text-slate-700 dark:text-neutral-300 mb-1">Giá trị đơn hàng (VNĐ) *</label>
                 <input
                   type="number"
                   required
                   value={voucherForm.orderAmount}
                   onChange={(e) => setVoucherForm({ ...voucherForm, orderAmount: e.target.value })}
                   placeholder="100000"
-                  className="w-full px-3 py-2 rounded-xl bg-neutral-950 border border-white/10 text-white text-xs outline-none focus:border-red-500"
+                  className="w-full text-xs"
                 />
               </div>
 
               <button
                 type="submit"
                 disabled={voucherSubmitting}
-                className="w-full py-2.5 px-4 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs transition cursor-pointer flex items-center justify-center gap-2"
+                className="w-full py-2.5 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-white/10 dark:hover:bg-white/20 text-slate-800 dark:text-white font-bold text-xs transition cursor-pointer flex items-center justify-center gap-2 border border-slate-200 dark:border-white/10"
               >
                 {voucherSubmitting ? (
                   <RefreshCw className="w-4 h-4 animate-spin" />
                 ) : (
                   <>
-                    <Calculator className="w-4 h-4 text-amber-400" />
+                    <Calculator className="w-4 h-4 text-amber-500" />
                     <span>Kiểm Tra & Tính Giảm Giá</span>
                   </>
                 )}
@@ -664,32 +664,32 @@ export const OrderManagement = () => {
           </div>
 
           {/* Recent Orders Card */}
-          <div className="rounded-3xl bg-neutral-900/80 border border-white/10 p-6 backdrop-blur-2xl shadow-glass-md space-y-4">
-            <h2 className="text-base font-bold text-white pb-3 border-b border-white/10 flex items-center justify-between">
+          <div className="rounded-3xl bg-white dark:bg-neutral-900/80 border border-slate-200 dark:border-white/10 p-6 backdrop-blur-2xl shadow-sm dark:shadow-glass-md space-y-4">
+            <h2 className="text-base font-bold text-slate-900 dark:text-white pb-3 border-b border-slate-100 dark:border-white/10 flex items-center justify-between">
               <span>Đơn Hàng Vừa Tạo</span>
-              <span className="text-[11px] text-neutral-400 font-normal">Phiên làm việc</span>
+              <span className="text-[11px] text-slate-400 dark:text-neutral-400 font-normal">Phiên làm việc</span>
             </h2>
 
             {recentOrders.length === 0 ? (
-              <div className="p-6 text-center text-xs text-neutral-500">
+              <div className="p-6 text-center text-xs text-slate-400 dark:text-neutral-500">
                 Chưa có đơn hàng nào được tạo trong phiên này
               </div>
             ) : (
               <div className="space-y-3 max-h-80 overflow-y-auto">
                 {recentOrders.map((ord, idx) => (
-                  <div key={idx} className="p-3.5 rounded-2xl bg-white/[0.03] border border-white/5 space-y-2">
+                  <div key={idx} className="p-3.5 rounded-2xl bg-slate-50 dark:bg-white/[0.03] border border-slate-200/80 dark:border-white/5 space-y-2">
                     <div className="flex items-center justify-between">
-                      <span className="font-mono font-bold text-xs text-red-400">{ord.trackingNumber}</span>
-                      <span className="text-[10px] text-neutral-400">{ord.createdAt}</span>
+                      <span className="font-mono font-bold text-xs text-red-600 dark:text-red-400">{ord.trackingNumber}</span>
+                      <span className="text-[10px] text-slate-400 dark:text-neutral-400">{ord.createdAt}</span>
                     </div>
-                    <p className="text-xs text-neutral-300">Người nhận: <span className="font-semibold text-white">{ord.receiverName}</span></p>
-                    <div className="flex items-center justify-between pt-2 border-t border-white/5">
-                      <span className="text-xs font-bold text-amber-300">{formatVND(ord.shippingFee)}</span>
+                    <p className="text-xs text-slate-600 dark:text-neutral-300">Người nhận: <span className="font-semibold text-slate-900 dark:text-white">{ord.receiverName}</span></p>
+                    <div className="flex items-center justify-between pt-2 border-t border-slate-200/60 dark:border-white/5">
+                      <span className="text-xs font-bold text-red-600 dark:text-amber-300">{formatVND(ord.shippingFee)}</span>
                       <button
                         type="button"
                         onClick={() => handleVNPayPayment(ord.orderId)}
                         disabled={payingOrderId === ord.orderId}
-                        className="inline-flex items-center gap-1 text-[11px] font-bold text-blue-400 hover:text-blue-300 cursor-pointer"
+                        className="inline-flex items-center gap-1 text-[11px] font-bold text-blue-600 dark:text-blue-400 hover:underline cursor-pointer"
                       >
                         <CreditCard className="w-3.5 h-3.5" /> Thanh toán VNPay
                       </button>

@@ -2,13 +2,13 @@ import React, { useState, useRef } from "react";
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 
 /**
- * 3D Tilt Card with dynamic cursor glare reflection and perspective rotation
+ * 3D Tilt Card with dynamic cursor glare reflection and perspective rotation (Dual Theme Supported)
  */
 export function TiltCard({
   children,
   className = "",
-  glareColor = "rgba(238, 0, 51, 0.15)",
-  tiltAngle = 12,
+  glareColor = "rgba(238, 0, 51, 0.12)",
+  tiltAngle = 10,
   ...props
 }) {
   const cardRef = useRef(null);
@@ -65,7 +65,7 @@ export function TiltCard({
         rotateY,
         transformStyle: "preserve-3d",
       }}
-      className={`relative overflow-hidden rounded-3xl bg-neutral-900/80 border border-white/10 p-6 backdrop-blur-2xl shadow-glass-md transition-all duration-300 ${className}`}
+      className={`relative overflow-hidden rounded-3xl bg-white dark:bg-neutral-900/80 border border-slate-200 dark:border-white/10 p-6 backdrop-blur-2xl shadow-sm dark:shadow-glass-md transition-all duration-300 ${className}`}
       {...props}
     >
       {/* Dynamic Cursor Glare Spotlight */}
